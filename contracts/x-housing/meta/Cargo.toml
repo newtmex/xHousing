@@ -1,0 +1,12 @@
+[package]
+name = "x-housing-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies.x-housing]
+path = ".."
+
+[dependencies.multiversx-sc-meta]
+version = "0.50.1"
+default-features = false
