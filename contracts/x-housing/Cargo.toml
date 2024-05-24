@@ -11,6 +11,10 @@ path = "src/x_housing.rs"
 [dependencies.multiversx-sc]
 version = "0.50.1"
 
+[dependencies.utils]
+package = "x-housing-utils"
+path = "../../rust-packages/x-housing-utils"
+
 [dev-dependencies]
 num-bigint = "0.4"
 

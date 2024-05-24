@@ -2431,6 +2431,14 @@ dependencies = [
  "multiversx-sc",
  "multiversx-sc-scenario",
  "num-bigint",
+ "x-housing-utils",
+]
+
+[[package]]
+name = "x-housing-utils"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]

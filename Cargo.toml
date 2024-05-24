@@ -1,5 +1,3 @@
 [workspace]
 
-members = [
-    "contracts/x-housing"
-]
+members = ["contracts/x-housing", "rust-packages/x-housing-utils"]
