@@ -1,10 +1,10 @@
 [package]
-name = "x-housing-meta"
+name = "coinbase-meta"
 version = "0.0.0"
 edition = "2021"
 publish = false
 
-[dependencies.x-housing]
+[dependencies.coinbase]
 path = ".."
 
 [dependencies.multiversx-sc-meta]

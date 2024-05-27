@@ -1,5 +1,7 @@
 #![no_std]
 
+pub mod coinbase_interaction;
+pub mod distribution;
 pub mod users;
 pub mod x_housing_proxy;
 
@@ -16,23 +18,29 @@ use multiversx_sc::imports::*;
 /// This contract owns and deploys xProject contracts which will represent the properties owned and managed by the xHousing project.
 /// The management of ecosystem users will also be done in this contract.
 #[multiversx_sc::contract]
-pub trait XHousing: users::UsersModule + utils::UtilsModule {
+pub trait XHousing:
+    users::UsersModule
+    + utils::UtilsModule
+    + coinbase_interaction::CoinbaseInteraction
+    + xht::XHTModule
+    + distribution::DistributionModule
+{
     #[init]
-    fn init(&self) {}
+    fn init(&self, coinbase: ManagedAddress) {
+        self.coinbase_addr().set_if_empty(coinbase);
+    }
 
     #[upgrade]
     fn upgrade(&self) {}
 
     #[endpoint(createRefID)]
     /// Creates a new user and returns ID or just returns their ref ID if they already are members
-    /// 
+    ///
     /// Anyone can call this endpoint to register their wallet address as users of the xHousing platform
     /// so they can get a referral ID that they can use to leverage other earning opportunities on the platform
     fn create_ref_id(&self, referrer_id: OptionalValue<usize>) -> usize {
         let user_addr = self.get_caller_as_user_address();
 
-        let user_id = self.create_or_get_user_id(&user_addr, referrer_id);
-
-        user_id
+        self.create_or_get_user_id(&user_addr, referrer_id)
     }
 }

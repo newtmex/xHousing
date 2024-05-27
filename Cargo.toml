@@ -1,3 +1,10 @@
 [workspace]
 
-members = ["contracts/x-housing", "rust-packages/x-housing-utils"]
+resolver = "2"
+
+members = [
+    "contracts/x-housing",
+    "contracts/coinbase",
+    "rust-packages/x-housing-utils",
+    "rust-packages/xht-module",
+]

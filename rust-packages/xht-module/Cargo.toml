@@ -1,0 +1,16 @@
+[package]
+name = "xht-module"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.multiversx-sc]
+version = "=0.50.1"
+
+[dependencies.utils]
+package = "x-housing-utils"
+path = "../../rust-packages/x-housing-utils"
+
+[dev-dependencies.multiversx-sc-scenario]
+version = "=0.50.1"

@@ -7,7 +7,7 @@
 // Init:                                 1
 // Upgrade:                              1
 // Endpoints:                            4
-// Async Callback (empty):               1
+// Async Callback:                       1
 // Total number of exported functions:   7
 
 #![no_std]
@@ -16,15 +16,15 @@ multiversx_sc_wasm_adapter::allocator!();
 multiversx_sc_wasm_adapter::panic_handler!();
 
 multiversx_sc_wasm_adapter::endpoints! {
-    x_housing
+    coinbase
     (
         init => init
         upgrade => upgrade
-        createRefID => create_ref_id
-        getAffiliateDetails => get_affiliate_details
-        top_up_xht => top_up_xht
+        register_xht => register_xht
         getXhtID => xht
+        feed_x_housing => feed_x_housing
+        lastDispatchEpoch => x_housing_last_dispatch
     )
 }
 
-multiversx_sc_wasm_adapter::async_callback_empty! {}
+multiversx_sc_wasm_adapter::async_callback! { coinbase }

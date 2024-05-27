@@ -8,6 +8,7 @@ use x_housing::*;
 
 const X_HOUSING_CODE_PATH: MxscPath = MxscPath::new("output/x-housing.mxsc.json");
 const X_HOUSING_ADDR: TestSCAddress = TestSCAddress::new("x-hosuing");
+const COINBASE_ADDR: TestSCAddress = TestSCAddress::new("coinbase");
 const X_HOUSING_OWNER_ADDR: TestAddress = TestAddress::new("x-housing-owner");
 
 fn world() -> ScenarioWorld {
@@ -36,7 +37,7 @@ impl XHousingTestState {
             .tx()
             .from(X_HOUSING_OWNER_ADDR)
             .typed(x_housing_proxy::XHousingProxy)
-            .init()
+            .init(COINBASE_ADDR)
             .code(X_HOUSING_CODE_PATH)
             .new_address(X_HOUSING_ADDR)
             .run();

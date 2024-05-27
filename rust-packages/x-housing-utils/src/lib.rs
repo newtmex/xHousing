@@ -2,6 +2,7 @@
 multiversx_sc::imports!();
 
 pub mod storage;
+pub mod types;
 
 #[multiversx_sc::module]
 pub trait UtilsModule {
@@ -14,4 +15,25 @@ pub trait UtilsModule {
 
         caller
     }
+
+    fn require_queried(&self) -> ManagedAddress {
+        let caller = self.blockchain().get_caller();
+        let sc_address = self.blockchain().get_sc_address();
+        require!(
+            caller == sc_address,
+            "May only call this function through VM query"
+        );
+
+        self.queried().set(1);
+
+        sc_address
+    }
+
+    fn call_is_query(&self) -> bool {
+        self.queried().get() == 1
+    }
+
+    // Stores a handle to know if request is a query
+    #[storage_mapper("utils_module::queried")]
+    fn queried(&self) -> SingleValueMapper<u8>;
 }

@@ -46,7 +46,7 @@ impl<SA: StorageMapperApi> UsersStorage<SA> {
 
         self.referred_by()
             .get(&user_id)
-            .map_or(None, |id| Some((id, self.get_user_address(id).unwrap())))
+            .map(|id| (id, self.get_user_address(id).unwrap()))
     }
 
     pub(super) fn get_user_id(&self, address: &ManagedAddress<SA>) -> usize {
