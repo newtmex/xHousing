@@ -3,9 +3,9 @@ use coinbase::*;
 use multiversx_sc::types::{TestAddress, TestSCAddress};
 use multiversx_sc_scenario::{api::StaticApi, imports::*, ScenarioWorld};
 use x_housing_module::x_housing::{self, x_housing_proxy};
-use x_project::x_project_proxy;
-use x_project_funding::x_project_funding_proxy;
-use xht::XHTTrait;
+use x_project::{token::attributes::XPTokenAttributes, x_project_proxy};
+use x_project_funding::{lk_xht_module::LkXhtAttributes, x_project_funding_proxy};
+use xht::{XHTTrait, XHT};
 
 type Xht = xht::XHT<StaticApi>;
 type OptionalAddress = OptionalValue<ManagedAddress<StaticApi>>;
@@ -148,6 +148,57 @@ impl CoinbaseTestState {
             )
             .run();
     }
+
+    fn fund_project(
+        &mut self,
+        depositor: TestAddress,
+        project_id: usize,
+        referrer_id: OptionalValue<usize>,
+        amount: u64,
+    ) {
+        self.world
+            .tx()
+            .to(X_PROJECT_FUNDING_ADDR)
+            .from(depositor)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
+            .fund_project(project_id, referrer_id)
+            .payment(EsdtTokenPayment::new(
+                FUNDING_TOKEN_ID.into(),
+                0,
+                amount.into(),
+            ))
+            .run();
+    }
+
+    fn get_xht_id(&mut self) -> TokenIdentifier<StaticApi> {
+        self.world
+            .query()
+            .to(X_PROJECT_FUNDING_ADDR)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
+            .xht()
+            .returns(ReturnsResult)
+            .run()
+    }
+
+    fn get_lk_xht_id(&mut self) -> TokenIdentifier<StaticApi> {
+        self.world
+            .query()
+            .to(X_PROJECT_FUNDING_ADDR)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
+            .lk_xht()
+            .returns(ReturnsResult)
+            .run()
+    }
+
+    fn get_project_token_id(&mut self, project_id: usize) -> TokenIdentifier<StaticApi> {
+        self.world
+            .query()
+            .to(X_PROJECT_FUNDING_ADDR)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
+            .x_project_token_id(project_id)
+            .returns(ReturnsResult)
+            .run()
+    }
 }
 
 #[test]
@@ -212,14 +263,7 @@ fn test_start_ico() {
 
     state.start_ico();
 
-    let xht_token = state
-        .world
-        .query()
-        .to(X_PROJECT_FUNDING_ADDR)
-        .typed(x_project_funding_proxy::XProjectFundingProxy)
-        .xht()
-        .returns(ReturnsResult)
-        .run();
+    let xht_token = state.get_xht_id();
 
     state
         .world
@@ -239,19 +283,7 @@ fn test_fund_project() {
 
     state.start_ico();
 
-    state
-        .world
-        .tx()
-        .to(X_PROJECT_FUNDING_ADDR)
-        .from(depositor)
-        .typed(x_project_funding_proxy::XProjectFundingProxy)
-        .fund_project(1usize, OptionalValue::<usize>::None)
-        .payment(EsdtTokenPayment::new(
-            FUNDING_TOKEN_ID.into(),
-            0,
-            50u64.into(),
-        ))
-        .run();
+    state.fund_project(depositor, 1, OptionalValue::None, 50);
 
     state
         .world
@@ -272,4 +304,119 @@ fn test_fund_project() {
         ))
         .returns(ExpectError(4, "cannot fund project after deadline"))
         .run();
+}
+
+#[test]
+fn test_claim_x_project_tokens() {
+    let mut state = CoinbaseTestState::new();
+
+    let depositor1 = TestAddress::new("depositor1");
+    let depositor2 = TestAddress::new("depositor2");
+
+    state
+        .world
+        .account(depositor1)
+        .esdt_balance(FUNDING_TOKEN_ID, 50_000)
+        .account(depositor2)
+        .esdt_balance(FUNDING_TOKEN_ID, 15_000);
+
+    state.start_ico();
+
+    state.fund_project(depositor2, 1, OptionalValue::None, 15_000);
+    state.fund_project(depositor1, 1, OptionalValue::None, 50_000);
+
+    state
+        .world
+        .set_state_step(SetStateStep::new().block_timestamp(15_000));
+
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(CONTRACTS_OWNER)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .register_lk_xht_token()
+        .run();
+
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(CONTRACTS_OWNER)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .set_x_project_token(1usize, "Ulo Gold")
+        .run();
+
+    // Claim
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor1)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .claim_x_project_tokens(1usize)
+        .run();
+    // Claim again
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor1)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .claim_x_project_tokens(1usize)
+        .returns(ExpectError(4, "User project deposit amount already used"))
+        .run();
+
+    // Claim
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor2)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .claim_x_project_tokens(1usize)
+        .run();
+
+    let lk_xht_token = state.get_lk_xht_id();
+    let project1_token_id = state.get_project_token_id(1);
+
+    let lk_attr = LkXhtAttributes::new(15_000);
+
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &lk_xht_token,
+            1,
+            XHT::from_parts(5_653_846, 152_116_481_831_923_585),
+            &lk_attr,
+        );
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &project1_token_id,
+            1,
+            769_230,
+            XPTokenAttributes::<StaticApi>::new(769_230u64.into()),
+        );
+
+    state
+        .world
+        .check_account(depositor2)
+        .esdt_nft_balance_and_attributes(
+            lk_xht_token,
+            2,
+            XHT::from_parts(1_696_153, 845_634_944_549_577_075),
+            lk_attr,
+        );
+    state
+        .world
+        .check_account(depositor2)
+        .esdt_nft_balance_and_attributes(
+            project1_token_id,
+            2,
+            230_769,
+            XPTokenAttributes::<StaticApi>::new(230_769u64.into()),
+        );
 }

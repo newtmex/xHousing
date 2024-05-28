@@ -1,9 +1,11 @@
 #![no_std]
 
-mod data;
 pub mod x_project_funding_proxy;
+pub mod x_project_storage;
 
-use data::XProjectStorage;
+pub use lk_xht_module;
+use lk_xht_module::default_issue_callbacks;
+
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
 use x_housing_module::x_housing::ProxyTrait as _;
@@ -22,7 +24,12 @@ use x_project::ProxyTrait as _;
 /// - **Refund Participants:** Allow participants to withdraw their funds if the funding goal is not met by the deadline.
 #[multiversx_sc::contract]
 pub trait XProjectFunding:
-    coinbase_module::CoinbaseModule + xht::XHTModule + x_housing_module::XHousingModule
+    coinbase_module::CoinbaseModule
+    + xht::XHTModule
+    + x_housing_module::XHousingModule
+    + x_project_storage::XProjectInteraction
+    + lk_xht_module::LkXhtModule
+    + default_issue_callbacks::DefaultIssueCallbacksModule
 {
     #[init]
     fn init(&self, coinbase: ManagedAddress) {
@@ -73,8 +80,12 @@ pub trait XProjectFunding:
             .init()
             .deploy_from_source(&x_project_template_addr, CodeMetadata::UPGRADEABLE);
 
-        self.x_project()
-            .create_new(funding_goal, funding_deadline, funding_token_id, address);
+        self.x_project_storage().create_new(
+            funding_goal,
+            funding_deadline,
+            funding_token_id,
+            address,
+        );
     }
 
     #[endpoint(fundProject)]
@@ -89,19 +100,10 @@ pub trait XProjectFunding:
             .create_ref_id_via_proxy(&depositor, referrer_id)
             .execute_on_dest_context();
 
-        self.x_project()
+        self.x_project_storage()
             .fund(project_id, depositor, deposit_payment);
     }
 
-    #[proxy]
-    fn x_project_proxy(&self) -> x_project::Proxy<Self::Api>;
-
     #[upgrade]
     fn upgrade(&self) {}
-
-    #[storage_mapper("xproject_template")]
-    fn xproject_template(&self) -> SingleValueMapper<ManagedAddress>;
-
-    #[storage_mapper("xproject")]
-    fn x_project(&self) -> XProjectStorage<Self::Api>;
 }

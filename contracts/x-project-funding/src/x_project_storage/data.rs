@@ -25,7 +25,7 @@ pub struct XProjectData<M: ManagedTypeApi> {
 }
 
 impl<M: BlockchainApi> XProjectData<M> {
-    fn status(&self) -> Status {
+    pub fn status(&self) -> Status {
         if M::blockchain_api_impl().get_block_timestamp() < self.funding_deadline {
             Status::FundingPeriod
         } else if self.collected_funds >= self.funding_goal {
@@ -41,7 +41,7 @@ pub struct XProjectStorage<SA: StorageMapperApi> {
 }
 
 impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
-    pub(super) fn create_new(
+    pub(crate) fn create_new(
         &self,
         funding_goal: BigUint<SA>,
         funding_deadline: u64,
@@ -75,7 +75,7 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
         data_store.set(data);
     }
 
-    pub(super) fn fund(
+    pub(crate) fn fund(
         &self,
         project_id: usize,
         depositor: ManagedAddress<SA>,
@@ -83,8 +83,7 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
     ) {
         self.require(payment.amount > BigUint::zero(), b"Invalid funding amount");
 
-        let project_store = self.x_project(project_id);
-        self.require(!project_store.is_empty(), b"Invalid Project ID");
+        let project_store = self.get_project_store(project_id);
 
         project_store.update(|data| {
             self.require(
@@ -100,13 +99,59 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
 
             self.user_x_project_deposit(data.id)
                 .entry(depositor)
-                .and_modify(|deposit| *deposit += &payment.amount)
-                .or_insert(payment.amount);
+                .and_modify(|(_, deposit)| *deposit += &payment.amount)
+                .or_insert((false, payment.amount));
         });
+    }
+
+    pub(super) fn take_deposit(
+        &self,
+        project_id: usize,
+        depositor: ManagedAddress<SA>,
+    ) -> (XProjectData<SA>, BigUint<SA>) {
+        let project = self.get_project(project_id);
+        self.require(
+            project.status() == Status::Successful,
+            b"Project Funding not yet successful",
+        );
+
+        let mut deposit_mapper = self.user_x_project_deposit(project_id);
+        self.require(
+            deposit_mapper.contains_key(&depositor),
+            b"User did not participate in project funding",
+        );
+
+        let mut deposit = BigUint::zero();
+        deposit_mapper
+            .entry(depositor)
+            .and_modify(|(taken, amount)| {
+                self.require(!*taken, b"User project deposit amount already used");
+
+                *taken = true;
+                deposit = amount.clone();
+            });
+
+        self.require(
+            deposit > BigUint::zero(),
+            b"Invalid user project deposited amount",
+        );
+        
+        (project, deposit)
     }
 
     fn get_current_time(&self) -> u64 {
         SA::blockchain_api_impl().get_block_timestamp()
+    }
+
+    pub(crate) fn get_project(&self, project_id: usize) -> XProjectData<SA> {
+        self.get_project_store(project_id).get()
+    }
+
+    fn get_project_store(&self, project_id: usize) -> SingleValueMapper<SA, XProjectData<SA>> {
+        let project_store = self.x_project(project_id);
+        self.require(!project_store.is_empty(), b"Invalid Project ID");
+
+        project_store
     }
 }
 
@@ -139,7 +184,7 @@ impl<SA: StorageMapperApi> XProjectStorage<SA> {
     fn user_x_project_deposit(
         &self,
         project_id: usize,
-    ) -> MapMapper<SA, ManagedAddress<SA>, BigUint<SA>> {
+    ) -> MapMapper<SA, ManagedAddress<SA>, (bool, BigUint<SA>)> {
         MapMapper::new(self.build_key(b"_deposits", &project_id))
     }
 }

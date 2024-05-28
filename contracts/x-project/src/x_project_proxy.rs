@@ -71,3 +71,68 @@ where
             .original_result()
     }
 }
+
+#[rustfmt::skip]
+impl<Env, From, To, Gas> XProjectProxyMethods<Env, From, To, Gas>
+where
+    Env: TxEnv,
+    Env::Api: VMApi,
+    From: TxFrom<Env>,
+    To: TxTo<Env>,
+    Gas: TxGas<Env>,
+{
+    pub fn register_xp_token<
+        Arg0: ProxyArg<ManagedBuffer<Env::Api>>,
+        Arg1: ProxyArg<BigUint<Env::Api>>,
+    >(
+        self,
+        name: Arg0,
+        amount_raised: Arg1,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("registerXPToken")
+            .argument(&name)
+            .argument(&amount_raised)
+            .original_result()
+    }
+
+    pub fn mint_xp_token<
+        Arg0: ProxyArg<BigUint<Env::Api>>,
+    >(
+        self,
+        deposit_amount: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("mint_xp_token")
+            .argument(&deposit_amount)
+            .original_result()
+    }
+
+    pub fn xp_token(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXPTokenId")
+            .original_result()
+    }
+
+    pub fn xp_token_supply(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, BigUint<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXPTokenSupply")
+            .original_result()
+    }
+
+    pub fn xp_token_max_supply(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, BigUint<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXPTokenMaxSupply")
+            .original_result()
+    }
+}

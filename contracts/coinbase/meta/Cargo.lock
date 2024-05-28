@@ -137,7 +137,7 @@ checksum = "98cc8fbded0c607b7ba9dd60cd98df59af97e84d24e49c8557331cfc26d301ce"
 name = "coinbase"
 version = "0.0.0"
 dependencies = [
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
  "x-housing-module",
  "x-project-funding",
  "xht-module",
@@ -155,7 +155,7 @@ dependencies = [
 name = "coinbase-module"
 version = "0.1.0"
 dependencies = [
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
 ]
 
 [[package]]
@@ -194,6 +194,13 @@ name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
+
+[[package]]
+name = "fixed-supply-token"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc 0.50.1",
+]
 
 [[package]]
 name = "hashbrown"
@@ -251,10 +258,46 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
+name = "lk-xht-module"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc 0.50.1",
+ "multiversx-sc-modules",
+ "x-housing-utils",
+]
+
+[[package]]
+name = "math"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc 0.46.1",
+]
+
+[[package]]
 name = "memchr"
 version = "2.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c8640c5d730cb13ebd907d8d04b52f55ac9a2eec55b440c8892f40d56c76c1d"
+
+[[package]]
+name = "mergeable"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc 0.50.1",
+]
+
+[[package]]
+name = "multiversx-sc"
+version = "0.46.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c94b173dc5ff0e157f767275fe6b7a1b4d2ad343bef7b66cd22a6353e016b93"
+dependencies = [
+ "bitflags",
+ "hex-literal",
+ "multiversx-sc-codec 0.18.3",
+ "multiversx-sc-derive 0.46.1",
+ "num-traits",
+]
 
 [[package]]
 name = "multiversx-sc"
@@ -264,10 +307,20 @@ checksum = "599a8eb65ec60fcd5f71366e83c8e71fc4ab0a89b313367634a61a75d745fb3b"
 dependencies = [
  "bitflags",
  "hex-literal",
- "multiversx-sc-codec",
- "multiversx-sc-derive",
+ "multiversx-sc-codec 0.19.0",
+ "multiversx-sc-derive 0.50.1",
  "num-traits",
  "unwrap-infallible",
+]
+
+[[package]]
+name = "multiversx-sc-codec"
+version = "0.18.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19908153158c03df4582af08f47c0eb39fb52a7dff4736b301a66acbbb9955d3"
+dependencies = [
+ "arrayvec",
+ "multiversx-sc-codec-derive 0.18.3",
 ]
 
 [[package]]
@@ -277,9 +330,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35c94397b2fba14e40edfa55905b3f453ed57aa06c9b1960ad6a0ca6bfb7a236"
 dependencies = [
  "arrayvec",
- "multiversx-sc-codec-derive",
+ "multiversx-sc-codec-derive 0.19.0",
  "num-bigint",
  "unwrap-infallible",
+]
+
+[[package]]
+name = "multiversx-sc-codec-derive"
+version = "0.18.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3b03b43f9cad320992f54ed162de2ed63e3ec83ed01361e57ee9c1865fba5a2"
+dependencies = [
+ "hex",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -291,6 +356,19 @@ dependencies = [
  "hex",
  "proc-macro2",
  "quote",
+ "syn",
+]
+
+[[package]]
+name = "multiversx-sc-derive"
+version = "0.46.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b78945957036c281ad6ee21bb5120dcefa2017688adf43ec94e3e7c982efb09"
+dependencies = [
+ "hex",
+ "proc-macro2",
+ "quote",
+ "radix_trie",
  "syn",
 ]
 
@@ -318,7 +396,7 @@ dependencies = [
  "convert_case",
  "hex",
  "lazy_static",
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
  "rustc_version",
  "semver",
  "serde",
@@ -326,6 +404,15 @@ dependencies = [
  "toml",
  "wasmparser",
  "wasmprinter",
+]
+
+[[package]]
+name = "multiversx-sc-modules"
+version = "0.50.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e77beee1a1aa0977ae40842dcae10e77ba830b6363a382a70bfce18671a7b35"
+dependencies = [
+ "multiversx-sc 0.50.1",
 ]
 
 [[package]]
@@ -724,7 +811,7 @@ name = "x-housing"
 version = "0.0.0"
 dependencies = [
  "coinbase-module",
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
  "x-housing-utils",
  "xht-module",
 ]
@@ -733,7 +820,7 @@ dependencies = [
 name = "x-housing-module"
 version = "0.1.0"
 dependencies = [
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
  "x-housing",
 ]
 
@@ -741,14 +828,18 @@ dependencies = [
 name = "x-housing-utils"
 version = "0.1.0"
 dependencies = [
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
 ]
 
 [[package]]
 name = "x-project"
 version = "0.0.0"
 dependencies = [
- "multiversx-sc",
+ "fixed-supply-token",
+ "math",
+ "mergeable",
+ "multiversx-sc 0.50.1",
+ "multiversx-sc-modules",
 ]
 
 [[package]]
@@ -756,7 +847,8 @@ name = "x-project-funding"
 version = "0.0.0"
 dependencies = [
  "coinbase-module",
- "multiversx-sc",
+ "lk-xht-module",
+ "multiversx-sc 0.50.1",
  "x-housing-module",
  "x-housing-utils",
  "x-project",
@@ -767,7 +859,7 @@ dependencies = [
 name = "xht-module"
 version = "0.1.0"
 dependencies = [
- "multiversx-sc",
+ "multiversx-sc 0.50.1",
  "x-housing-utils",
 ]
 

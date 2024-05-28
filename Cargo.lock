@@ -934,6 +934,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 
 [[package]]
+name = "lk-xht-module"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
+ "multiversx-sc-modules",
+ "multiversx-sc-scenario",
+ "x-housing-utils",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1099,6 +1109,15 @@ dependencies = [
  "wasmparser",
  "wasmprinter",
  "zip",
+]
+
+[[package]]
+name = "multiversx-sc-modules"
+version = "0.50.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e77beee1a1aa0977ae40842dcae10e77ba830b6363a382a70bfce18671a7b35"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]
@@ -2462,6 +2481,7 @@ name = "x-project"
 version = "0.0.0"
 dependencies = [
  "multiversx-sc",
+ "multiversx-sc-modules",
  "multiversx-sc-scenario",
  "num-bigint",
 ]
@@ -2471,6 +2491,7 @@ name = "x-project-funding"
 version = "0.0.0"
 dependencies = [
  "coinbase-module",
+ "lk-xht-module",
  "multiversx-sc",
  "multiversx-sc-scenario",
  "num-bigint",

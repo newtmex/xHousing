@@ -14,6 +14,9 @@ version = "=0.50.1"
 [dependencies.coinbase-module]
 path = "../../rust-packages/coinbase-module"
 
+[dependencies.lk-xht-module]
+path = "../../rust-packages/lk-xht-module"
+
 [dependencies.xht]
 package = "xht-module"
 path = "../../rust-packages/xht-module"

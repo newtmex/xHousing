@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                            4
-// Async Callback (empty):               1
-// Total number of exported functions:   7
+// Endpoints:                            9
+// Async Callback:                       1
+// Total number of exported functions:  12
 
 #![no_std]
 
@@ -24,7 +24,12 @@ multiversx_sc_wasm_adapter::endpoints! {
         deployXProject => deploy_x_project
         fundProject => fund_project
         getXhtID => xht
+        registerLkXht => register_lk_xht_token
+        set_x_project_token => set_x_project_token
+        claim_x_project_tokens => claim_x_project_tokens
+        getXProjectTokenID => x_project_token_id
+        getLkXhtID => lk_xht
     )
 }
 
-multiversx_sc_wasm_adapter::async_callback_empty! {}
+multiversx_sc_wasm_adapter::async_callback! { x_project_funding }

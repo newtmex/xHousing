@@ -151,4 +151,62 @@ where
             .raw_call("getXhtID")
             .original_result()
     }
+
+    pub fn register_lk_xht_token(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("registerLkXht")
+            .original_result()
+    }
+
+    pub fn set_x_project_token<
+        Arg0: ProxyArg<usize>,
+        Arg1: ProxyArg<ManagedBuffer<Env::Api>>,
+    >(
+        self,
+        project_id: Arg0,
+        name: Arg1,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("set_x_project_token")
+            .argument(&project_id)
+            .argument(&name)
+            .original_result()
+    }
+
+    pub fn claim_x_project_tokens<
+        Arg0: ProxyArg<usize>,
+    >(
+        self,
+        project_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("claim_x_project_tokens")
+            .argument(&project_id)
+            .original_result()
+    }
+
+    pub fn x_project_token_id<
+        Arg0: ProxyArg<usize>,
+    >(
+        self,
+        project_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXProjectTokenID")
+            .argument(&project_id)
+            .original_result()
+    }
+
+    pub fn lk_xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getLkXhtID")
+            .original_result()
+    }
 }
