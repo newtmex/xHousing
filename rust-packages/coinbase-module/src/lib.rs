@@ -7,12 +7,12 @@ pub trait CoinbaseModule {
     fn require_caller_is_coinbase(&self) -> ManagedAddress {
         let caller = self.blockchain().get_caller();
 
-        require!(self.get_coinbase_address() == caller, "not authorized");
+        require!(self.get_coinbase_addr() == caller, "not authorized");
 
         caller
     }
 
-    fn get_coinbase_address(&self) -> ManagedAddress<Self::Api> {
+    fn get_coinbase_addr(&self) -> ManagedAddress {
         let addr = self.coinbase_addr().get();
 
         require!(
@@ -21,6 +21,15 @@ pub trait CoinbaseModule {
         );
 
         addr
+    }
+
+    fn set_coinbase_addr(&self, addr: ManagedAddress) {
+        require!(
+            self.blockchain().is_smart_contract(&addr),
+            "Invalid XHousing address"
+        );
+
+        self.coinbase_addr().set(addr);
     }
 
     #[storage_mapper("coinbase_module::addr")]

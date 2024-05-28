@@ -21,6 +21,9 @@ path = "../../rust-packages/xht-module"
 [dependencies.x-project]
 path = "../x-project"
 
+[dependencies.x-housing-module]
+path = "../../rust-packages/x-housing-module"
+
 [dependencies.utils]
 package = "x-housing-utils"
 path = "../../rust-packages/x-housing-utils"

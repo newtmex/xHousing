@@ -2,7 +2,7 @@ use coinbase::*;
 
 use multiversx_sc::types::{TestAddress, TestSCAddress};
 use multiversx_sc_scenario::{api::StaticApi, imports::*, ScenarioWorld};
-use x_housing::x_housing_proxy;
+use x_housing_module::x_housing::{self, x_housing_proxy};
 use x_project::x_project_proxy;
 use x_project_funding::x_project_funding_proxy;
 use xht::XHTTrait;
@@ -25,6 +25,7 @@ const X_PROJECT_TEMPLATE_CODE_PATH: MxscPath =
 
 const XHT_ID: &str = "str:XCR-123456";
 const XHT_STORE_KEY: &str = "str:xht-module::xht";
+const FUNDING_TOKEN_ID: TestTokenIdentifier = TestTokenIdentifier::new("FUND-123456");
 
 fn world() -> ScenarioWorld {
     let mut world = ScenarioWorld::new();
@@ -60,7 +61,7 @@ impl CoinbaseTestState {
             .tx()
             .from(CONTRACTS_OWNER)
             .typed(x_housing_proxy::XHousingProxy)
-            .init(COINBASE_ADDR)
+            .init(COINBASE_ADDR, X_PROJECT_FUNDING_ADDR)
             .code(X_HOUSING_CODE_PATH)
             .new_address(X_HOUSING_ADDR)
             .run();
@@ -123,6 +124,30 @@ impl CoinbaseTestState {
         self.world
             .set_state_step(SetStateStep::new().put_account(COINBASE_ADDR, coinbase_state));
     }
+
+    fn start_ico(&mut self) {
+        self.deploy_coinbase();
+        self.register_xht();
+
+        self.deploy_x_housing();
+        self.deploy_x_project_template();
+        self.deploy_x_project_funding();
+
+        self.world
+            .tx()
+            .to(COINBASE_ADDR)
+            .from(CONTRACTS_OWNER)
+            .typed(coinbase_proxy::CoinbaseProxy)
+            .start_ico(
+                X_PROJECT_FUNDING_ADDR,
+                X_PROJECT_TEMPLATE_ADDR,
+                X_HOUSING_ADDR,
+                FUNDING_TOKEN_ID,
+                20_000u64,
+                10_000u64,
+            )
+            .run();
+    }
 }
 
 #[test]
@@ -182,31 +207,10 @@ fn test_x_housing_genesis() {
 }
 
 #[test]
-fn start_ico() {
+fn test_start_ico() {
     let mut state = CoinbaseTestState::new();
 
-    state.deploy_coinbase();
-    state.register_xht();
-
-    state.deploy_x_housing();
-    state.deploy_x_project_template();
-    state.deploy_x_project_funding();
-
-    state
-        .world
-        .tx()
-        .to(COINBASE_ADDR)
-        .from(CONTRACTS_OWNER)
-        .typed(coinbase_proxy::CoinbaseProxy)
-        .start_ico(
-            X_PROJECT_FUNDING_ADDR,
-            X_PROJECT_TEMPLATE_ADDR,
-            X_HOUSING_ADDR,
-            TestTokenIdentifier::new("FUND-123456"),
-            20_000u64,
-            10_000u64,
-        )
-        .run();
+    state.start_ico();
 
     let xht_token = state
         .world
@@ -221,4 +225,51 @@ fn start_ico() {
         .world
         .check_account(X_PROJECT_FUNDING_ADDR)
         .esdt_balance(xht_token, Xht::ico_funds());
+}
+
+#[test]
+fn test_fund_project() {
+    let mut state = CoinbaseTestState::new();
+
+    let depositor = TestAddress::new("depositor");
+    state
+        .world
+        .account(depositor)
+        .esdt_balance(FUNDING_TOKEN_ID, 50_000);
+
+    state.start_ico();
+
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .fund_project(1usize, OptionalValue::<usize>::None)
+        .payment(EsdtTokenPayment::new(
+            FUNDING_TOKEN_ID.into(),
+            0,
+            50u64.into(),
+        ))
+        .run();
+
+    state
+        .world
+        .set_state_step(SetStateStep::new().block_timestamp(15_000));
+
+    // Late funding
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .fund_project(1usize, OptionalValue::<usize>::None)
+        .payment(EsdtTokenPayment::new(
+            FUNDING_TOKEN_ID.into(),
+            0,
+            50u64.into(),
+        ))
+        .returns(ExpectError(4, "cannot fund project after deadline"))
+        .run();
 }

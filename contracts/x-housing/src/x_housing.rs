@@ -27,8 +27,13 @@ pub trait XHousing:
     + coinbase_module::CoinbaseModule
 {
     #[init]
-    fn init(&self, coinbase: ManagedAddress) {
+    fn init(&self, coinbase: ManagedAddress, x_project_funding: ManagedAddress) {
+        self.require_is_sc_addr(&coinbase);
+        self.require_is_sc_addr(&x_project_funding);
+
         self.coinbase_addr().set_if_empty(coinbase);
+        self.x_project_funding_addr()
+            .set_if_empty(x_project_funding);
     }
 
     #[upgrade]
@@ -37,11 +42,36 @@ pub trait XHousing:
     #[endpoint(createRefID)]
     /// Creates a new user and returns ID or just returns their ref ID if they already are members
     ///
-    /// Anyone can call this endpoint to register their wallet address as users of the xHousing platform
+    /// Anyone can call this endpoint at anytime (during project funding or not) to register their wallet address as users of the xHousing platform
     /// so they can get a referral ID that they can use to leverage other earning opportunities on the platform
     fn create_ref_id(&self, referrer_id: OptionalValue<usize>) -> usize {
         let user_addr = self.get_caller_as_user_address();
 
         self.create_or_get_user_id(&user_addr, referrer_id)
     }
+
+    #[endpoint]
+    fn create_ref_id_via_proxy(
+        &self,
+        user_addr: ManagedAddress,
+        referrer_id: OptionalValue<usize>,
+    ) -> usize {
+        self.require_caller_is_x_project_funding();
+        require!(
+            !self.blockchain().is_smart_contract(&user_addr),
+            "user address is smart contract"
+        );
+
+        self.create_or_get_user_id(&user_addr, referrer_id)
+    }
+
+    fn require_caller_is_x_project_funding(&self) {
+        let caller = self.blockchain().get_caller();
+        let x_project_funding_addr = self.x_project_funding_addr().get();
+
+        require!(caller == x_project_funding_addr, "not allowed");
+    }
+
+    #[storage_mapper("x-project-funding-addr")]
+    fn x_project_funding_addr(&self) -> SingleValueMapper<ManagedAddress>;
 }

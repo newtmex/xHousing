@@ -6,6 +6,13 @@ pub mod types;
 
 #[multiversx_sc::module]
 pub trait UtilsModule {
+    fn require_is_sc_addr(&self, addr: &ManagedAddress) {
+        require!(
+            self.blockchain().is_smart_contract(addr),
+            "address is not smart contract"
+        );
+    }
+
     fn get_caller_as_user_address(&self) -> ManagedAddress {
         let caller = self.blockchain().get_caller();
         require!(

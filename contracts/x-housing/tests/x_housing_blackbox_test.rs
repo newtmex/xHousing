@@ -7,8 +7,11 @@ use multiversx_sc_scenario::imports::*;
 use x_housing::*;
 
 const X_HOUSING_CODE_PATH: MxscPath = MxscPath::new("output/x-housing.mxsc.json");
+
 const X_HOUSING_ADDR: TestSCAddress = TestSCAddress::new("x-hosuing");
 const COINBASE_ADDR: TestSCAddress = TestSCAddress::new("coinbase");
+const X_PROJECT_FUNDING_ADDR: TestSCAddress = TestSCAddress::new("x-project-funding");
+
 const X_HOUSING_OWNER_ADDR: TestAddress = TestAddress::new("x-housing-owner");
 
 fn world() -> ScenarioWorld {
@@ -37,7 +40,7 @@ impl XHousingTestState {
             .tx()
             .from(X_HOUSING_OWNER_ADDR)
             .typed(x_housing_proxy::XHousingProxy)
-            .init(COINBASE_ADDR)
+            .init(COINBASE_ADDR, X_PROJECT_FUNDING_ADDR)
             .code(X_HOUSING_CODE_PATH)
             .new_address(X_HOUSING_ADDR)
             .run();

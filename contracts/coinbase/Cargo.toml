@@ -15,8 +15,8 @@ version = "=0.50.1"
 package = "xht-module"
 path = "../../rust-packages/xht-module"
 
-[dependencies.x-housing]
-path = "../x-housing"
+[dependencies.x-housing-module]
+path = "../../rust-packages/x-housing-module"
 
 [dependencies.x-project-funding]
 path = "../x-project-funding"

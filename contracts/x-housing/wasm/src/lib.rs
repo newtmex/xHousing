@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                            4
+// Endpoints:                            5
 // Async Callback (empty):               1
-// Total number of exported functions:   7
+// Total number of exported functions:   8
 
 #![no_std]
 
@@ -21,6 +21,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         init => init
         upgrade => upgrade
         createRefID => create_ref_id
+        create_ref_id_via_proxy => create_ref_id_via_proxy
         getAffiliateDetails => get_affiliate_details
         top_up_xht => top_up_xht
         getXhtID => xht

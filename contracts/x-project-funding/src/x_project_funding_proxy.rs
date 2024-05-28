@@ -94,7 +94,7 @@ where
     >(
         self,
         xproject_template: Arg0,
-        xhousing_address: Arg1,
+        x_housing_address: Arg1,
         funding_token_id: Arg2,
         funding_goal: Arg3,
         funding_deadline: Arg4,
@@ -102,7 +102,7 @@ where
         self.wrapped_tx
             .raw_call("init_first_x_project")
             .argument(&xproject_template)
-            .argument(&xhousing_address)
+            .argument(&x_housing_address)
             .argument(&funding_token_id)
             .argument(&funding_goal)
             .argument(&funding_deadline)
@@ -125,6 +125,21 @@ where
             .argument(&funding_token_id)
             .argument(&funding_goal)
             .argument(&funding_deadline)
+            .original_result()
+    }
+
+    pub fn fund_project<
+        Arg0: ProxyArg<usize>,
+        Arg1: ProxyArg<OptionalValue<usize>>,
+    >(
+        self,
+        project_id: Arg0,
+        referrer_id: Arg1,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("fundProject")
+            .argument(&project_id)
+            .argument(&referrer_id)
             .original_result()
     }
 

@@ -1,0 +1,12 @@
+[package]
+name = "x-housing-module"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.multiversx-sc]
+version = "=0.50.1"
+
+[dependencies.x-housing]
+path = "../../contracts/x-housing"

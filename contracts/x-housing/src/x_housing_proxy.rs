@@ -45,14 +45,17 @@ where
 {
     pub fn init<
         Arg0: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg1: ProxyArg<ManagedAddress<Env::Api>>,
     >(
         self,
         coinbase: Arg0,
+        x_project_funding: Arg1,
     ) -> TxTypedDeploy<Env, From, NotPayable, Gas, ()> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_deploy()
             .argument(&coinbase)
+            .argument(&x_project_funding)
             .original_result()
     }
 }
@@ -87,7 +90,7 @@ where
 {
     /// Creates a new user and returns ID or just returns their ref ID if they already are members 
     ///  
-    /// Anyone can call this endpoint to register their wallet address as users of the xHousing platform 
+    /// Anyone can call this endpoint at anytime (during project funding or not) to register their wallet address as users of the xHousing platform 
     /// so they can get a referral ID that they can use to leverage other earning opportunities on the platform 
     pub fn create_ref_id<
         Arg0: ProxyArg<OptionalValue<usize>>,
@@ -98,6 +101,22 @@ where
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("createRefID")
+            .argument(&referrer_id)
+            .original_result()
+    }
+
+    pub fn create_ref_id_via_proxy<
+        Arg0: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg1: ProxyArg<OptionalValue<usize>>,
+    >(
+        self,
+        user_addr: Arg0,
+        referrer_id: Arg1,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, usize> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("create_ref_id_via_proxy")
+            .argument(&user_addr)
             .argument(&referrer_id)
             .original_result()
     }

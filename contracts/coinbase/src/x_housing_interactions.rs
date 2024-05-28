@@ -1,4 +1,4 @@
-use x_housing::coinbase_interaction::ProxyTrait as _;
+use x_housing_module::x_housing::coinbase_interaction::ProxyTrait as _;
 use xht::{economics::emission::EmissionTrait, XHT};
 
 multiversx_sc::imports!();
@@ -6,7 +6,7 @@ multiversx_sc::imports!();
 const FEED_INTERVAL: u64 = 7;
 
 #[multiversx_sc::module]
-pub trait XHousingModule: xht::XHTModule {
+pub trait XHousingModule: xht::XHTModule + x_housing_module::XHousingModule {
     /// `x_housing_address` is supplied only when doing genesis tx
     #[only_owner]
     #[endpoint]
@@ -18,7 +18,7 @@ pub trait XHousingModule: xht::XHTModule {
         if let Some(x_housing_address) = x_housing_address.into_option() {
             require!(epoch_start == 0, "genesis dispatch already done");
 
-            self.x_housing_address().set(&x_housing_address);
+            self.set_x_housing_addr(x_housing_address);
             self.x_housing_genesis_epoch().set(block_epoch)
         }
 
@@ -46,30 +46,10 @@ pub trait XHousingModule: xht::XHTModule {
         last_dispatch_mapper.set(epoch_end);
     }
 
-    fn get_x_housing_address(&self) -> ManagedAddress {
-        let address = self.x_housing_address().get();
-        require!(
-            self.blockchain().is_smart_contract(&address),
-            "invalid x_housing address"
-        );
-
-        address
-    }
-
-    fn call_x_housing(&self) -> x_housing::ProxyTo<Self::Api> {
-        self.x_housing_proxy_obj(self.get_x_housing_address())
-    }
-
-    #[proxy]
-    fn x_housing_proxy_obj(&self, address: ManagedAddress) -> x_housing::Proxy<Self::Api>;
-
     /// The last epoch that x_housing received XHT
     #[view(lastDispatchEpoch)]
     #[storage_mapper("x_housing::lastXHTsDispatch")]
     fn x_housing_last_dispatch(&self) -> SingleValueMapper<u64>;
-
-    #[storage_mapper("x_housing::address")]
-    fn x_housing_address(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[storage_mapper("x_housing::genesis_epoch")]
     fn x_housing_genesis_epoch(&self) -> SingleValueMapper<u64>;

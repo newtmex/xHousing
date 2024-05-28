@@ -6,6 +6,7 @@ pub mod x_project_funding_proxy;
 use data::XProjectStorage;
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
+use x_housing_module::x_housing::ProxyTrait as _;
 use x_project::ProxyTrait as _;
 
 /// The `xProjectFunding` contract is designed to manage the crowdfunding process for real estate projects
@@ -20,10 +21,12 @@ use x_project::ProxyTrait as _;
 /// - **xProject Deployment:** Deploy the `xProject` contract when the funding goal is reached and disburse tokens.
 /// - **Refund Participants:** Allow participants to withdraw their funds if the funding goal is not met by the deadline.
 #[multiversx_sc::contract]
-pub trait XProjectFunding: coinbase_module::CoinbaseModule + xht::XHTModule {
+pub trait XProjectFunding:
+    coinbase_module::CoinbaseModule + xht::XHTModule + x_housing_module::XHousingModule
+{
     #[init]
     fn init(&self, coinbase: ManagedAddress) {
-        self.coinbase_addr().set_if_empty(coinbase);
+        self.set_coinbase_addr(coinbase);
     }
 
     #[payable("*")]
@@ -31,7 +34,7 @@ pub trait XProjectFunding: coinbase_module::CoinbaseModule + xht::XHTModule {
     fn init_first_x_project(
         &self,
         xproject_template: ManagedAddress,
-        xhousing_address: ManagedAddress,
+        x_housing_address: ManagedAddress,
         funding_token_id: EgldOrEsdtTokenIdentifier,
         funding_goal: BigUint,
         funding_deadline: u64,
@@ -45,7 +48,7 @@ pub trait XProjectFunding: coinbase_module::CoinbaseModule + xht::XHTModule {
         xht_mapper.set_token_id(xht_payment.token_identifier);
 
         self.xproject_template().set(&xproject_template);
-        self.xhousing_address().set(&xhousing_address);
+        self.set_x_housing_addr(x_housing_address);
 
         self.deploy_x_project(funding_token_id, funding_goal, funding_deadline);
     }
@@ -74,6 +77,22 @@ pub trait XProjectFunding: coinbase_module::CoinbaseModule + xht::XHTModule {
             .create_new(funding_goal, funding_deadline, funding_token_id, address);
     }
 
+    #[endpoint(fundProject)]
+    #[payable("*")]
+    fn fund_project(&self, project_id: usize, referrer_id: OptionalValue<usize>) {
+        let deposit_payment = self.call_value().egld_or_single_esdt();
+        let depositor = self.blockchain().get_caller();
+
+        // Try register user
+        let _: IgnoreValue = self
+            .call_x_housing()
+            .create_ref_id_via_proxy(&depositor, referrer_id)
+            .execute_on_dest_context();
+
+        self.x_project()
+            .fund(project_id, depositor, deposit_payment);
+    }
+
     #[proxy]
     fn x_project_proxy(&self) -> x_project::Proxy<Self::Api>;
 
@@ -82,9 +101,6 @@ pub trait XProjectFunding: coinbase_module::CoinbaseModule + xht::XHTModule {
 
     #[storage_mapper("xproject_template")]
     fn xproject_template(&self) -> SingleValueMapper<ManagedAddress>;
-
-    #[storage_mapper("xhousing_address")]
-    fn xhousing_address(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[storage_mapper("xproject")]
     fn x_project(&self) -> XProjectStorage<Self::Api>;

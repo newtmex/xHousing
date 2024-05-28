@@ -7,7 +7,7 @@ use multiversx_sc::{
 };
 use utils::storage::StorageBuilder;
 
-#[derive(TopEncode, TopDecode, NestedDecode, NestedEncode, PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Status {
     FundingPeriod,
     Successful,
@@ -22,7 +22,18 @@ pub struct XProjectData<M: ManagedTypeApi> {
     pub funding_deadline: u64,
     pub funding_token_id: EgldOrEsdtTokenIdentifier<M>,
     pub collected_funds: BigUint<M>,
-    pub status: Status,
+}
+
+impl<M: BlockchainApi> XProjectData<M> {
+    fn status(&self) -> Status {
+        if M::blockchain_api_impl().get_block_timestamp() < self.funding_deadline {
+            Status::FundingPeriod
+        } else if self.collected_funds >= self.funding_goal {
+            Status::Successful
+        } else {
+            Status::Failed
+        }
+    }
 }
 
 pub struct XProjectStorage<SA: StorageMapperApi> {
@@ -55,7 +66,6 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
             funding_deadline,
             funding_token_id,
             collected_funds: BigUint::zero(),
-            status: Status::FundingPeriod,
         };
 
         let data_store = self.x_project(data.id);
@@ -63,6 +73,36 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
 
         self.id_n_address().insert(data.id, data.address.clone());
         data_store.set(data);
+    }
+
+    pub(super) fn fund(
+        &self,
+        project_id: usize,
+        depositor: ManagedAddress<SA>,
+        payment: EgldOrEsdtTokenPayment<SA>,
+    ) {
+        self.require(payment.amount > BigUint::zero(), b"Invalid funding amount");
+
+        let project_store = self.x_project(project_id);
+        self.require(!project_store.is_empty(), b"Invalid Project ID");
+
+        project_store.update(|data| {
+            self.require(
+                data.status() == Status::FundingPeriod,
+                b"cannot fund project after deadline",
+            );
+            self.require(
+                payment.token_identifier == data.funding_token_id,
+                b"wrong token payment",
+            );
+
+            data.collected_funds += &payment.amount;
+
+            self.user_x_project_deposit(data.id)
+                .entry(depositor)
+                .and_modify(|deposit| *deposit += &payment.amount)
+                .or_insert(payment.amount);
+        });
     }
 
     fn get_current_time(&self) -> u64 {
@@ -88,11 +128,18 @@ impl<SA: StorageMapperApi> XProjectStorage<SA> {
         SingleValueMapper::new(self.build_key_by_key(b"_total"))
     }
 
-    fn id_n_address(&self) -> MapMapper<SA, usize, ManagedAddress<SA>> {
-        MapMapper::new(self.build_key_by_key(b"_id_n_address"))
+    fn id_n_address(&self) -> BiDiMapper<SA, usize, ManagedAddress<SA>> {
+        BiDiMapper::new(self.build_key_by_key(b"_project_id_n_address"))
     }
 
     fn x_project(&self, id: usize) -> SingleValueMapper<SA, XProjectData<SA>> {
         SingleValueMapper::new(self.build_key_by_id(&id))
+    }
+
+    fn user_x_project_deposit(
+        &self,
+        project_id: usize,
+    ) -> MapMapper<SA, ManagedAddress<SA>, BigUint<SA>> {
+        MapMapper::new(self.build_key(b"_deposits", &project_id))
     }
 }

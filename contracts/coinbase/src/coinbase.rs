@@ -22,6 +22,7 @@ pub trait Coinbase:
     xht::XHTModule
     + x_housing_interactions::XHousingModule
     + x_project_funding_interactions::XProjectFundingInteraction
+    + x_housing_module::XHousingModule
 {
     #[init]
     fn init(&self) {}
