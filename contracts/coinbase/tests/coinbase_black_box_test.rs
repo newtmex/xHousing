@@ -3,6 +3,8 @@ use coinbase::*;
 use multiversx_sc::types::{TestAddress, TestSCAddress};
 use multiversx_sc_scenario::{api::StaticApi, imports::*, ScenarioWorld};
 use x_housing::x_housing_proxy;
+use x_project::x_project_proxy;
+use x_project_funding::x_project_funding_proxy;
 use xht::XHTTrait;
 
 type Xht = xht::XHT<StaticApi>;
@@ -11,8 +13,15 @@ type OptionalAddress = OptionalValue<ManagedAddress<StaticApi>>;
 const CONTRACTS_OWNER: TestAddress = TestAddress::new("contracts-owner");
 const COINBASE_ADDR: TestSCAddress = TestSCAddress::new("coinbase");
 const X_HOUSING_ADDR: TestSCAddress = TestSCAddress::new("x-housing");
+const X_PROJECT_FUNDING_ADDR: TestSCAddress = TestSCAddress::new("x-project-funding");
+const X_PROJECT_TEMPLATE_ADDR: TestSCAddress = TestSCAddress::new("x-project-template");
+
 const COINBASE_CODE_PATH: MxscPath = MxscPath::new("output/coinbase.mxsc.json");
 const X_HOUSING_CODE_PATH: MxscPath = MxscPath::new("../x-housing/output/x-housing.mxsc.json");
+const X_PROJECT_FUNDING_CODE_PATH: MxscPath =
+    MxscPath::new("../x-project-funding/output/x-project-funding.mxsc.json");
+const X_PROJECT_TEMPLATE_CODE_PATH: MxscPath =
+    MxscPath::new("../x-project/output/x-project.mxsc.json");
 
 const XHT_ID: &str = "str:XCR-123456";
 const XHT_STORE_KEY: &str = "str:xht-module::xht";
@@ -22,11 +31,99 @@ fn world() -> ScenarioWorld {
 
     world.register_contract(COINBASE_CODE_PATH, coinbase::ContractBuilder);
     world.register_contract(X_HOUSING_CODE_PATH, x_housing::ContractBuilder);
+    world.register_contract(
+        X_PROJECT_FUNDING_CODE_PATH,
+        x_project_funding::ContractBuilder,
+    );
+    world.register_contract(X_PROJECT_TEMPLATE_CODE_PATH, x_project::ContractBuilder);
 
     world
 }
 
 const BLOCKS_PER_EPOCH: u64 = 14_400;
+
+struct CoinbaseTestState {
+    world: ScenarioWorld,
+}
+
+impl CoinbaseTestState {
+    fn new() -> Self {
+        let mut world = world();
+
+        world.account(CONTRACTS_OWNER);
+
+        Self { world }
+    }
+
+    fn deploy_x_housing(&mut self) {
+        self.world
+            .tx()
+            .from(CONTRACTS_OWNER)
+            .typed(x_housing_proxy::XHousingProxy)
+            .init(COINBASE_ADDR)
+            .code(X_HOUSING_CODE_PATH)
+            .new_address(X_HOUSING_ADDR)
+            .run();
+    }
+
+    fn deploy_coinbase(&mut self) {
+        self.world
+            .tx()
+            .from(CONTRACTS_OWNER)
+            .typed(coinbase_proxy::CoinbaseProxy)
+            .init()
+            .code(COINBASE_CODE_PATH)
+            .new_address(COINBASE_ADDR)
+            .run();
+    }
+
+    fn deploy_x_project_template(&mut self) {
+        self.world
+            .tx()
+            .from(CONTRACTS_OWNER)
+            .typed(x_project_proxy::XProjectProxy)
+            .init()
+            .code(X_PROJECT_TEMPLATE_CODE_PATH)
+            .new_address(X_PROJECT_TEMPLATE_ADDR)
+            .run();
+    }
+
+    fn deploy_x_project_funding(&mut self) {
+        self.world
+            .tx()
+            .from(CONTRACTS_OWNER)
+            .typed(x_project_funding::x_project_funding_proxy::XProjectFundingProxy)
+            .init(COINBASE_ADDR)
+            .code(X_PROJECT_FUNDING_CODE_PATH)
+            .new_address(X_PROJECT_FUNDING_ADDR)
+            .run();
+    }
+
+    fn register_xht(&mut self) {
+        self.world
+            .tx()
+            .from(CONTRACTS_OWNER)
+            .to(COINBASE_ADDR)
+            .gas(90_000_000)
+            .typed(coinbase_proxy::CoinbaseProxy)
+            .register_xht()
+            .run();
+
+        let mut coinbase_state = Account::new()
+            .owner(CONTRACTS_OWNER)
+            .esdt_balance(XHT_ID, Xht::max_supply());
+        coinbase_state
+            .storage
+            .insert(XHT_STORE_KEY.into(), XHT_ID.into());
+        let coinbase_code = self
+            .world
+            .code_expression(&COINBASE_CODE_PATH.eval_to_expr());
+        coinbase_state.code = Some(coinbase_code);
+
+        self.world
+            .set_state_step(SetStateStep::new().put_account(COINBASE_ADDR, coinbase_state));
+    }
+}
 
 #[test]
 fn test_x_housing_genesis() {
@@ -42,53 +139,14 @@ fn test_x_housing_genesis() {
             .block_round(current_block)
     };
 
-    let mut world = world();
+    let mut state = CoinbaseTestState::new();
 
-    world.start_trace().account(CONTRACTS_OWNER);
-    // .new_address(CONTRACTS_OWNER, 0, COINBASE_ADDR)
-    // .new_address(CONTRACTS_OWNER, 1, X_HOUSING_ADDR);
+    state.deploy_coinbase();
+    state.deploy_x_housing();
+    state.register_xht();
 
-    world
-        .tx()
-        .from(CONTRACTS_OWNER)
-        .typed(coinbase_proxy::CoinbaseProxy)
-        .init()
-        .code(COINBASE_CODE_PATH)
-        .new_address(COINBASE_ADDR)
-        .run();
-
-    world
-        .tx()
-        .from(CONTRACTS_OWNER)
-        .typed(x_housing_proxy::XHousingProxy)
-        .init(COINBASE_ADDR)
-        .code(X_HOUSING_CODE_PATH)
-        .new_address(X_HOUSING_ADDR)
-        .run();
-
-    world
-        .tx()
-        .from(CONTRACTS_OWNER)
-        .to(COINBASE_ADDR)
-        .gas(90_000_000)
-        .typed(coinbase_proxy::CoinbaseProxy)
-        .register_xht()
-        .run();
-
-    // world.account(COINBASE_ADDR).
-
-    let mut coinbase_state = Account::new()
-        .owner(CONTRACTS_OWNER)
-        .esdt_balance(XHT_ID, Xht::max_supply());
-    coinbase_state
-        .storage
-        .insert(XHT_STORE_KEY.into(), XHT_ID.into());
-    let coinbase_code = world.code_expression(&COINBASE_CODE_PATH.eval_to_expr());
-    coinbase_state.code = Some(coinbase_code);
-
-    world.set_state_step(SetStateStep::new().put_account(COINBASE_ADDR, coinbase_state));
-
-    world
+    state
+        .world
         .tx()
         .from(CONTRACTS_OWNER)
         .to(COINBASE_ADDR)
@@ -98,7 +156,8 @@ fn test_x_housing_genesis() {
         .run();
 
     // Feeding too early
-    world
+    state
+        .world
         .tx()
         .from(CONTRACTS_OWNER)
         .to(COINBASE_ADDR)
@@ -108,8 +167,11 @@ fn test_x_housing_genesis() {
         .returns(ExpectError(4, "feed epoch not reached"))
         .run();
 
-    world.set_state_step(move_blocks(BLOCKS_PER_EPOCH * 25));
-    world
+    state
+        .world
+        .set_state_step(move_blocks(BLOCKS_PER_EPOCH * 25));
+    state
+        .world
         .tx()
         .from(CONTRACTS_OWNER)
         .to(COINBASE_ADDR)
@@ -117,4 +179,46 @@ fn test_x_housing_genesis() {
         .typed(coinbase_proxy::CoinbaseProxy)
         .feed_x_housing(OptionalAddress::None)
         .run();
+}
+
+#[test]
+fn start_ico() {
+    let mut state = CoinbaseTestState::new();
+
+    state.deploy_coinbase();
+    state.register_xht();
+
+    state.deploy_x_housing();
+    state.deploy_x_project_template();
+    state.deploy_x_project_funding();
+
+    state
+        .world
+        .tx()
+        .to(COINBASE_ADDR)
+        .from(CONTRACTS_OWNER)
+        .typed(coinbase_proxy::CoinbaseProxy)
+        .start_ico(
+            X_PROJECT_FUNDING_ADDR,
+            X_PROJECT_TEMPLATE_ADDR,
+            X_HOUSING_ADDR,
+            TestTokenIdentifier::new("FUND-123456"),
+            20_000u64,
+            10_000u64,
+        )
+        .run();
+
+    let xht_token = state
+        .world
+        .query()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .xht()
+        .returns(ReturnsResult)
+        .run();
+
+    state
+        .world
+        .check_account(X_PROJECT_FUNDING_ADDR)
+        .esdt_balance(xht_token, Xht::ico_funds());
 }

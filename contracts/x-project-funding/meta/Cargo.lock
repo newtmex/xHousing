@@ -702,28 +702,36 @@ dependencies = [
 ]
 
 [[package]]
-name = "x-housing"
+name = "x-housing-utils"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
+]
+
+[[package]]
+name = "x-project"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc",
+]
+
+[[package]]
+name = "x-project-funding"
 version = "0.0.0"
 dependencies = [
  "coinbase-module",
  "multiversx-sc",
  "x-housing-utils",
+ "x-project",
  "xht-module",
 ]
 
 [[package]]
-name = "x-housing-meta"
+name = "x-project-funding-meta"
 version = "0.0.0"
 dependencies = [
  "multiversx-sc-meta",
- "x-housing",
-]
-
-[[package]]
-name = "x-housing-utils"
-version = "0.1.0"
-dependencies = [
- "multiversx-sc",
+ "x-project-funding",
 ]
 
 [[package]]

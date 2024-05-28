@@ -18,8 +18,15 @@ path = "../../rust-packages/xht-module"
 [dependencies.x-housing]
 path = "../x-housing"
 
+[dependencies.x-project-funding]
+path = "../x-project-funding"
+
 [dev-dependencies]
 num-bigint = "0.4"
 
 [dev-dependencies.multiversx-sc-scenario]
 version = "=0.50.1"
+
+
+[dev-dependencies.x-project]
+path = "../x-project"

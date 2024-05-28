@@ -134,13 +134,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98cc8fbded0c607b7ba9dd60cd98df59af97e84d24e49c8557331cfc26d301ce"
 
 [[package]]
-name = "coinbase-module"
-version = "0.1.0"
-dependencies = [
- "multiversx-sc",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -702,36 +695,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "x-housing"
+name = "x-project"
 version = "0.0.0"
 dependencies = [
- "coinbase-module",
  "multiversx-sc",
- "x-housing-utils",
- "xht-module",
 ]
 
 [[package]]
-name = "x-housing-meta"
+name = "x-project-meta"
 version = "0.0.0"
 dependencies = [
  "multiversx-sc-meta",
- "x-housing",
-]
-
-[[package]]
-name = "x-housing-utils"
-version = "0.1.0"
-dependencies = [
- "multiversx-sc",
-]
-
-[[package]]
-name = "xht-module"
-version = "0.1.0"
-dependencies = [
- "multiversx-sc",
- "x-housing-utils",
+ "x-project",
 ]
 
 [[package]]

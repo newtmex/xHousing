@@ -1,0 +1,2 @@
+[[proxy]]
+path = "src/x_project_funding_proxy.rs"

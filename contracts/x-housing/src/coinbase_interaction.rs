@@ -9,7 +9,10 @@ multiversx_sc::imports!();
 
 #[multiversx_sc::module]
 pub trait CoinbaseInteraction:
-    xht::XHTModule + distribution::DistributionModule + utils::UtilsModule
+    xht::XHTModule
+    + distribution::DistributionModule
+    + utils::UtilsModule
+    + coinbase_module::CoinbaseModule
 {
     #[endpoint]
     #[payable("*")]
@@ -36,23 +39,4 @@ pub trait CoinbaseInteraction:
 
         // TODO TOP up staking rewards for distribution
     }
-
-    fn require_caller_is_coinbase(&self) -> ManagedAddress {
-        let caller = self.blockchain().get_caller();
-
-        require!(self.get_coinbase_address() == caller, "not authorized");
-
-        caller
-    }
-
-    fn get_coinbase_address(&self) -> ManagedAddress<Self::Api> {
-        let addr = self.coinbase_addr().get();
-
-        require!(!addr.is_zero(), "Invalid ls address");
-
-        addr
-    }
-
-    #[storage_mapper("coinbase_addr")]
-    fn coinbase_addr(&self) -> SingleValueMapper<Self::Api, ManagedAddress>;
 }

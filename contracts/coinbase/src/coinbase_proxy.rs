@@ -121,4 +121,33 @@ where
             .raw_call("lastDispatchEpoch")
             .original_result()
     }
+
+    /// `x_housing_address` is supplied only when doing genesis tx 
+    pub fn start_ico<
+        Arg0: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg1: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg2: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg3: ProxyArg<EgldOrEsdtTokenIdentifier<Env::Api>>,
+        Arg4: ProxyArg<BigUint<Env::Api>>,
+        Arg5: ProxyArg<u64>,
+    >(
+        self,
+        x_project_funding_addr: Arg0,
+        xproject_template: Arg1,
+        xhousing_address: Arg2,
+        funding_token_id: Arg3,
+        funding_goal: Arg4,
+        funding_deadline: Arg5,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("start_ico")
+            .argument(&x_project_funding_addr)
+            .argument(&xproject_template)
+            .argument(&xhousing_address)
+            .argument(&funding_token_id)
+            .argument(&funding_goal)
+            .argument(&funding_deadline)
+            .original_result()
+    }
 }

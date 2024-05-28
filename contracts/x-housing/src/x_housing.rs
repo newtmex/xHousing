@@ -24,6 +24,7 @@ pub trait XHousing:
     + coinbase_interaction::CoinbaseInteraction
     + xht::XHTModule
     + distribution::DistributionModule
+    + coinbase_module::CoinbaseModule
 {
     #[init]
     fn init(&self, coinbase: ManagedAddress) {

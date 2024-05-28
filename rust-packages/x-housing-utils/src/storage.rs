@@ -11,7 +11,17 @@ pub trait StorageBuilder<SA: StorageMapperApi> {
         SA::error_api_impl().signal_error(message);
     }
 
-    fn build_key_optional<T: NestedEncode>(&self, key: Option<&[u8]>, id: Option<&T>) -> StorageKey<SA> {
+    fn require(&self, condition: bool, err_msg: &[u8]) {
+        if !condition {
+            self.panic(err_msg);
+        }
+    }
+
+    fn build_key_optional<T: NestedEncode>(
+        &self,
+        key: Option<&[u8]>,
+        id: Option<&T>,
+    ) -> StorageKey<SA> {
         if let (None, None) = (&id, &key) {
             self.panic(b"either key or id must be set");
         }

@@ -294,7 +294,16 @@ dependencies = [
  "multiversx-sc-scenario",
  "num-bigint",
  "x-housing",
+ "x-project",
+ "x-project-funding",
  "xht-module",
+]
+
+[[package]]
+name = "coinbase-module"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]
@@ -2425,6 +2434,7 @@ dependencies = [
 name = "x-housing"
 version = "0.0.0"
 dependencies = [
+ "coinbase-module",
  "multiversx-sc",
  "multiversx-sc-scenario",
  "num-bigint",
@@ -2437,6 +2447,28 @@ name = "x-housing-utils"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+]
+
+[[package]]
+name = "x-project"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc",
+ "multiversx-sc-scenario",
+ "num-bigint",
+]
+
+[[package]]
+name = "x-project-funding"
+version = "0.0.0"
+dependencies = [
+ "coinbase-module",
+ "multiversx-sc",
+ "multiversx-sc-scenario",
+ "num-bigint",
+ "x-housing-utils",
+ "x-project",
+ "xht-module",
 ]
 
 [[package]]

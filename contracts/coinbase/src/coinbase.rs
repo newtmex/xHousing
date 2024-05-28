@@ -2,6 +2,7 @@
 
 pub mod coinbase_proxy;
 mod x_housing_interactions;
+pub mod x_project_funding_interactions;
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
@@ -17,7 +18,11 @@ use xht::{self, XHTTrait, XHT};
 /// access control mechanisms are included to restrict certain operations to authorized parties,
 /// maintaining the integrity and security of the platform's token economy.
 #[multiversx_sc::contract]
-pub trait Coinbase: xht::XHTModule + x_housing_interactions::XHousingModule {
+pub trait Coinbase:
+    xht::XHTModule
+    + x_housing_interactions::XHousingModule
+    + x_project_funding_interactions::XProjectFundingInteraction
+{
     #[init]
     fn init(&self) {}
 

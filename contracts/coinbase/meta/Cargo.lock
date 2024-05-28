@@ -139,6 +139,7 @@ version = "0.0.0"
 dependencies = [
  "multiversx-sc",
  "x-housing",
+ "x-project-funding",
  "xht-module",
 ]
 
@@ -148,6 +149,13 @@ version = "0.0.0"
 dependencies = [
  "coinbase",
  "multiversx-sc-meta",
+]
+
+[[package]]
+name = "coinbase-module"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]
@@ -715,6 +723,7 @@ dependencies = [
 name = "x-housing"
 version = "0.0.0"
 dependencies = [
+ "coinbase-module",
  "multiversx-sc",
  "x-housing-utils",
  "xht-module",
@@ -725,6 +734,24 @@ name = "x-housing-utils"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+]
+
+[[package]]
+name = "x-project"
+version = "0.0.0"
+dependencies = [
+ "multiversx-sc",
+]
+
+[[package]]
+name = "x-project-funding"
+version = "0.0.0"
+dependencies = [
+ "coinbase-module",
+ "multiversx-sc",
+ "x-housing-utils",
+ "x-project",
+ "xht-module",
 ]
 
 [[package]]

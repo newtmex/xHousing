@@ -1,19 +1,15 @@
 [package]
-name = "x-housing"
+name = "x-project-funding"
 version = "0.0.0"
-authors = ["Levi Chimezie levi@techypharm.com"]
+authors = ["you"]
 edition = "2021"
 publish = false
 
 [lib]
-path = "src/x_housing.rs"
+path = "src/x_project_funding.rs"
 
 [dependencies.multiversx-sc]
 version = "=0.50.1"
-
-[dependencies.utils]
-package = "x-housing-utils"
-path = "../../rust-packages/x-housing-utils"
 
 [dependencies.coinbase-module]
 path = "../../rust-packages/coinbase-module"
@@ -21,6 +17,13 @@ path = "../../rust-packages/coinbase-module"
 [dependencies.xht]
 package = "xht-module"
 path = "../../rust-packages/xht-module"
+
+[dependencies.x-project]
+path = "../x-project"
+
+[dependencies.utils]
+package = "x-housing-utils"
+path = "../../rust-packages/x-housing-utils"
 
 [dev-dependencies]
 num-bigint = "0.4"
