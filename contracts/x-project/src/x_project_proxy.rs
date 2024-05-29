@@ -43,12 +43,16 @@ where
     From: TxFrom<Env>,
     Gas: TxGas<Env>,
 {
-    pub fn init(
+    pub fn init<
+        Arg0: ProxyArg<ManagedAddress<Env::Api>>,
+    >(
         self,
+        x_housing_addr: Arg0,
     ) -> TxTypedDeploy<Env, From, NotPayable, Gas, ()> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_deploy()
+            .argument(&x_housing_addr)
             .original_result()
     }
 }
@@ -81,31 +85,45 @@ where
     To: TxTo<Env>,
     Gas: TxGas<Env>,
 {
+    pub fn claim_rent_reward(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, XPTokenAttributes<Env::Api>> {
+        self.wrapped_tx
+            .raw_call("claimRentReward")
+            .original_result()
+    }
+
     pub fn register_xp_token<
         Arg0: ProxyArg<ManagedBuffer<Env::Api>>,
         Arg1: ProxyArg<BigUint<Env::Api>>,
+        Arg2: ProxyArg<TokenIdentifier<Env::Api>>,
     >(
         self,
         name: Arg0,
         amount_raised: Arg1,
+        xht_id: Arg2,
     ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
         self.wrapped_tx
             .raw_call("registerXPToken")
             .argument(&name)
             .argument(&amount_raised)
+            .argument(&xht_id)
             .original_result()
     }
 
     pub fn mint_xp_token<
         Arg0: ProxyArg<BigUint<Env::Api>>,
+        Arg1: ProxyArg<ManagedAddress<Env::Api>>,
     >(
         self,
         deposit_amount: Arg0,
+        depositor: Arg1,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("mint_xp_token")
             .argument(&deposit_amount)
+            .argument(&depositor)
             .original_result()
     }
 
@@ -135,4 +153,41 @@ where
             .raw_call("getXPTokenMaxSupply")
             .original_result()
     }
+
+    pub fn receive_rent(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("receiveRent")
+            .original_result()
+    }
+
+    pub fn reward_per_share(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, BigUint<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getRewardPerShare")
+            .original_result()
+    }
+
+    pub fn xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXhtID")
+            .original_result()
+    }
+}
+
+#[type_abi]
+#[derive(ManagedVecItem, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone, PartialEq, Debug)]
+pub struct XPTokenAttributes<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub reward_per_share: BigUint<Api>,
+    pub token_weight: BigUint<Api>,
+    pub original_owner: ManagedAddress<Api>,
 }

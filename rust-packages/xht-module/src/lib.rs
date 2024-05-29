@@ -46,6 +46,16 @@ pub trait XHTModule {
         EsdtTokenPayment::new(self.xht().get_token_id(), 0, xht)
     }
 
+    fn send_xht(&self, to: &ManagedAddress, amount: BigUint) {
+        let payment = self.make_xht_payment(amount);
+        self.send().direct_esdt(
+            to,
+            &payment.token_identifier,
+            payment.token_nonce,
+            &payment.amount,
+        );
+    }
+
     #[view(getXhtID)]
     #[storage_mapper("xht-module::xht")]
     fn xht(&self) -> FungibleTokenMapper;

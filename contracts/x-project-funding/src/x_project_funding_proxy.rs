@@ -201,6 +201,19 @@ where
             .original_result()
     }
 
+    pub fn x_project_address<
+        Arg0: ProxyArg<usize>,
+    >(
+        self,
+        project_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ManagedAddress<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXProjectAddress")
+            .argument(&project_id)
+            .original_result()
+    }
+
     pub fn lk_xht(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {

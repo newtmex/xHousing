@@ -69,6 +69,7 @@ pub trait XProjectFunding:
         funding_deadline: u64,
     ) {
         let x_project_template_addr = self.xproject_template().get();
+        let x_housing_addr = self.get_x_housing_addr();
         require!(
             self.blockchain()
                 .is_smart_contract(&x_project_template_addr),
@@ -77,7 +78,7 @@ pub trait XProjectFunding:
 
         let (address, ()) = self
             .x_project_proxy()
-            .init()
+            .init(x_housing_addr)
             .deploy_from_source(&x_project_template_addr, CodeMetadata::UPGRADEABLE);
 
         self.x_project_storage().create_new(

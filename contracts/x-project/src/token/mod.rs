@@ -7,12 +7,20 @@ multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 #[multiversx_sc::module]
-pub trait XPTokenModule: default_issue_callbacks::DefaultIssueCallbacksModule {
+pub trait XPTokenModule:
+    xht::XHTModule + default_issue_callbacks::DefaultIssueCallbacksModule
+{
     #[only_owner]
     #[payable("EGLD")]
     #[endpoint(registerXPToken)]
-    fn register_xp_token(&self, name: ManagedBuffer, amount_raised: BigUint) {
+    fn register_xp_token(
+        &self,
+        name: ManagedBuffer,
+        amount_raised: BigUint,
+        xht_id: TokenIdentifier<Self::Api>,
+    ) {
         require!(self.xp_token().is_empty(), "XPToken already set");
+        self.xht().set_token_id(xht_id);
 
         let payment_amount = self.call_value().egld_value();
         self.xp_amount_raised().set(amount_raised);
@@ -29,7 +37,7 @@ pub trait XPTokenModule: default_issue_callbacks::DefaultIssueCallbacksModule {
 
     #[only_owner]
     #[endpoint]
-    fn mint_xp_token(&self, deposit_amount: BigUint) {
+    fn mint_xp_token(&self, deposit_amount: BigUint, depositor: ManagedAddress) {
         let total_deposits = self.xp_amount_raised().get();
         let max_shares = self.xp_token_max_supply().get();
 
@@ -52,7 +60,7 @@ pub trait XPTokenModule: default_issue_callbacks::DefaultIssueCallbacksModule {
         let token_nonce = self.send().esdt_nft_create_compact(
             &token_id,
             &mint_share,
-            &XPTokenAttributes::new(mint_share.clone()),
+            &XPTokenAttributes::new(mint_share.clone(), depositor),
         );
 
         self.tx()

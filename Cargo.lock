@@ -2474,6 +2474,7 @@ name = "x-housing-utils"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+ "multiversx-sc-scenario",
 ]
 
 [[package]]
@@ -2484,6 +2485,9 @@ dependencies = [
  "multiversx-sc-modules",
  "multiversx-sc-scenario",
  "num-bigint",
+ "x-housing-module",
+ "x-housing-utils",
+ "xht-module",
 ]
 
 [[package]]

@@ -11,7 +11,7 @@ multiversx_sc::imports!();
 
 #[multiversx_sc::module]
 pub trait XProjectInteraction:
-    lk_xht_module::LkXhtModule + default_issue_callbacks::DefaultIssueCallbacksModule
+    xht::XHTModule + lk_xht_module::LkXhtModule + default_issue_callbacks::DefaultIssueCallbacksModule
 {
     #[only_owner]
     #[payable("EGLD")]
@@ -54,7 +54,7 @@ pub trait XProjectInteraction:
 
         let _: IgnoreValue = self
             .call_x_project(project.address)
-            .register_xp_token(name, project.collected_funds)
+            .register_xp_token(name, project.collected_funds, self.xht().get_token_id())
             .egld(self.call_value().egld_value())
             .execute_on_dest_context();
     }
@@ -69,7 +69,7 @@ pub trait XProjectInteraction:
 
         let back_transfers = self
             .call_x_project(project.address)
-            .mint_xp_token(&deposit_amount)
+            .mint_xp_token(&deposit_amount, &depositor)
             .returns(ReturnsBackTransfers)
             .sync_call();
 
@@ -101,6 +101,11 @@ pub trait XProjectInteraction:
         self.call_x_project(project_addr)
             .xp_token()
             .execute_on_dest_context()
+    }
+
+    #[view(getXProjectAddress)]
+    fn x_project_address(&self, project_id: usize) -> ManagedAddress {
+        self.x_project_storage().get_project(project_id).address
     }
 
     #[proxy]
