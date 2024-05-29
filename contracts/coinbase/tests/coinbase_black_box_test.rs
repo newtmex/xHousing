@@ -387,19 +387,23 @@ fn test_claim_x_project_tokens() {
     state.claim_x_project_tokens(depositor2, 1usize);
 
     let lk_xht_token = state.get_lk_xht_id();
+    let xht_id = state.get_xht_id();
     let project1_token_id = state.get_project_token_id(1);
 
-    let lk_attr = LkXhtAttributes::new(15_000);
+    let lk_attr = |balance| LkXhtAttributes::new(15_000, balance);
 
+    let depositor1_xht_claim = XHT::from_parts(5_653_846, 152_116_481_831_923_585);
     state
         .world
         .check_account(depositor1)
+        .esdt_balance(&xht_id, 0)
         .esdt_nft_balance_and_attributes(
             &lk_xht_token,
             1,
-            XHT::from_parts(5_653_846, 152_116_481_831_923_585),
-            &lk_attr,
+            &depositor1_xht_claim,
+            &lk_attr(depositor1_xht_claim.clone()),
         );
+
     state
         .world
         .check_account(depositor1)
@@ -413,15 +417,12 @@ fn test_claim_x_project_tokens() {
             ),
         );
 
+    let balance = XHT::from_parts(1_696_153, 845_634_944_549_577_075);
     state
         .world
         .check_account(depositor2)
-        .esdt_nft_balance_and_attributes(
-            lk_xht_token,
-            2,
-            XHT::from_parts(1_696_153, 845_634_944_549_577_075),
-            lk_attr,
-        );
+        .esdt_balance(&xht_id, 0)
+        .esdt_nft_balance_and_attributes(&lk_xht_token, 2, &balance, lk_attr(balance.clone()));
     state
         .world
         .check_account(depositor2)
@@ -433,6 +434,75 @@ fn test_claim_x_project_tokens() {
                 230_769u64.into(),
                 depositor2.resolve_address(&TxScEnv::default()),
             ),
+        );
+
+    state.world.set_esdt_local_roles(
+        X_PROJECT_FUNDING_ADDR,
+        lk_xht_token.to_boxed_bytes().as_slice(),
+        &[EsdtLocalRole::NftUpdateAttributes],
+    );
+
+    state.set_block_timestamp(25_000);
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_balance(&xht_id, 0);
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor1)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .unlock_xht()
+        .payment(EsdtTokenPayment::new(
+            lk_xht_token.clone(),
+            1,
+            depositor1_xht_claim.clone(),
+        ))
+        .run();
+
+    let depositor1_xht_claimed = XHT::from_parts(595, 974_810_273_359_162_273);
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_balance(&xht_id, &depositor1_xht_claimed);
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &lk_xht_token,
+            1,
+            &depositor1_xht_claim,
+            lk_attr(&depositor1_xht_claim - &depositor1_xht_claimed),
+        );
+
+    // Move far away from locked duration
+    state.set_block_timestamp(x_project_funding::lk_xht_module::LOCK_DURATION + 50_000);
+    state
+        .world
+        .tx()
+        .to(X_PROJECT_FUNDING_ADDR)
+        .from(depositor1)
+        .typed(x_project_funding_proxy::XProjectFundingProxy)
+        .unlock_xht()
+        .payment(EsdtTokenPayment::new(
+            lk_xht_token.clone(),
+            1,
+            depositor1_xht_claim.clone(),
+        ))
+        .run();
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_balance(&xht_id, XHT::from_parts(5_653_846, 152_116_481_831_923_585));
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &lk_xht_token,
+            1,
+            &depositor1_xht_claim,
+            lk_attr(0u64.into()),
         );
 }
 
@@ -498,7 +568,13 @@ fn test_claim_rent_reward() {
         .payment(EsdtTokenPayment::new(project1_token_id, 1, 0u64.into()))
         .run();
 
-    state.world.check_account(depositor2).esdt_balance(&xht_id, 3_231);
+    state
+        .world
+        .check_account(depositor2)
+        .esdt_balance(&xht_id, 3_231);
     // Deposistor1 receives becase they are the referrer of depositor1
-    state.world.check_account(depositor1).esdt_balance(&xht_id, 230);
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_balance(&xht_id, 230);
 }

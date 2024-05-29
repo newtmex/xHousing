@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           10
+// Endpoints:                           11
 // Async Callback:                       1
-// Total number of exported functions:  13
+// Total number of exported functions:  14
 
 #![no_std]
 
@@ -23,6 +23,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         init_first_x_project => init_first_x_project
         deployXProject => deploy_x_project
         fundProject => fund_project
+        unlockXht => unlock_xht
         getXhtID => xht
         registerLkXht => register_lk_xht_token
         set_x_project_token => set_x_project_token

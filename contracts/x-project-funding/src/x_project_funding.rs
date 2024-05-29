@@ -4,7 +4,7 @@ pub mod x_project_funding_proxy;
 pub mod x_project_storage;
 
 pub use lk_xht_module;
-use lk_xht_module::default_issue_callbacks;
+use lk_xht_module::{default_issue_callbacks, LkXhtAttributes};
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
@@ -35,6 +35,9 @@ pub trait XProjectFunding:
     fn init(&self, coinbase: ManagedAddress) {
         self.set_coinbase_addr(coinbase);
     }
+
+    #[upgrade]
+    fn upgrade(&self) {}
 
     #[payable("*")]
     #[endpoint]
@@ -105,6 +108,29 @@ pub trait XProjectFunding:
             .fund(project_id, depositor, deposit_payment);
     }
 
-    #[upgrade]
-    fn upgrade(&self) {}
+    #[payable("*")]
+    #[endpoint(unlockXht)]
+    fn unlock_xht(&self) {
+        let mut payments = self.call_value().all_esdt_transfers().clone_value();
+
+        let lk_xht_mapper = self.lk_xht();
+        lk_xht_mapper.require_all_same_token(&payments);
+
+        let mut xht_amount = BigUint::zero();
+
+        for token in &payments {
+            let (unlocked, new_attr) = lk_xht_mapper
+                .get_token_attributes::<LkXhtAttributes<Self::Api>>(token.token_nonce)
+                .unlock_matured();
+
+            xht_amount += unlocked;
+            lk_xht_mapper.nft_update_attributes(token.token_nonce, &new_attr);
+        }
+
+        // Add XHT to payments, then send payments back to user
+        if xht_amount > 0 {
+            payments.push(self.make_xht_payment(xht_amount));
+        }
+        self.tx().to(ToCaller).multi_esdt(payments).transfer();
+    }
 }

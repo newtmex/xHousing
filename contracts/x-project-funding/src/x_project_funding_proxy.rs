@@ -143,6 +143,14 @@ where
             .original_result()
     }
 
+    pub fn unlock_xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("unlockXht")
+            .original_result()
+    }
+
     pub fn xht(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
