@@ -18,6 +18,12 @@ path = "../../rust-packages/xht-module"
 [dependencies.x-housing-module]
 path = "../../rust-packages/x-housing-module"
 
+[dependencies.x-housing-utils]
+path = "../../rust-packages/x-housing-utils"
+
+[dependencies.x-housing]
+path = "../x-housing"
+
 [dependencies.x-project-funding]
 path = "../x-project-funding"
 

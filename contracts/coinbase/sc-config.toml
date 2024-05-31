@@ -1,2 +1,4 @@
+[settings]
+
 [[proxy]]
-path = "src/coinbase_proxy.rs"
+path = "../../rust-packages/x-housing-utils/src/contracts_proxy/coinbase_proxy.rs"

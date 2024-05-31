@@ -1,6 +1,5 @@
 #![no_std]
 
-pub mod x_project_funding_proxy;
 pub mod x_project_storage;
 
 pub use lk_xht_module;
@@ -8,8 +7,7 @@ use lk_xht_module::{default_issue_callbacks, LkXhtAttributes};
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
-use x_housing_module::x_housing::ProxyTrait as _;
-use x_project::ProxyTrait as _;
+use utils::contracts_proxy::x_project_proxy;
 
 /// The `xProjectFunding` contract is designed to manage the crowdfunding process for real estate projects
 /// within the xHousing ecosystem. This contract facilitates the collection of funds from participants, handles
@@ -27,9 +25,9 @@ pub trait XProjectFunding:
     coinbase_module::CoinbaseModule
     + xht::XHTModule
     + x_housing_module::XHousingModule
-    + x_project_storage::XProjectInteraction
     + lk_xht_module::LkXhtModule
     + default_issue_callbacks::DefaultIssueCallbacksModule
+    + x_project_storage::XProjectInteraction
 {
     #[init]
     fn init(&self, coinbase: ManagedAddress) {
@@ -84,7 +82,8 @@ pub trait XProjectFunding:
         );
 
         let (address, ()) = self
-            .x_project_proxy()
+            .tx()
+            .typed(x_project_proxy::XProjectProxy)
             .init(x_housing_addr)
             .deploy_from_source(&x_project_template_addr, CodeMetadata::UPGRADEABLE);
 

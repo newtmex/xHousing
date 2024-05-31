@@ -2,7 +2,7 @@
 
 multiversx_sc::imports!();
 
-pub use x_housing;
+use utils::contracts_proxy::x_housing_proxy;
 
 #[multiversx_sc::module]
 pub trait XHousingModule {
@@ -35,12 +35,14 @@ pub trait XHousingModule {
         self.x_housing_addr().set(addr);
     }
 
-    fn call_x_housing(&self) -> x_housing::ProxyTo<Self::Api> {
-        self.x_housing_proxy(self.get_x_housing_addr())
+    fn call_x_housing(
+        &self,
+    ) -> x_housing_proxy::XHousingProxyMethods<TxScEnv<Self::Api>, (), ManagedAddress<Self::Api>, ()>
+    {
+        self.tx()
+            .to(self.get_x_housing_addr())
+            .typed(x_housing_proxy::XHousingProxy)
     }
-
-    #[proxy]
-    fn x_housing_proxy(&self, address: ManagedAddress) -> x_housing::Proxy<Self::Api>;
 
     #[storage_mapper("x_housing_module::addr")]
     fn x_housing_addr(&self) -> SingleValueMapper<Self::Api, ManagedAddress>;

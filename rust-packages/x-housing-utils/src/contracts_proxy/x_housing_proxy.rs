@@ -134,6 +134,19 @@ where
             .original_result()
     }
 
+    pub fn set_lk_xht_id<
+        Arg0: ProxyArg<TokenIdentifier<Env::Api>>,
+    >(
+        self,
+        token_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("set_lk_xht_id")
+            .argument(&token_id)
+            .original_result()
+    }
+
     pub fn register_xst_token(
         self,
     ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
@@ -212,6 +225,15 @@ where
             .raw_call("stake")
             .argument(&epochs_lock)
             .argument(&referrer_id)
+            .original_result()
+    }
+
+    pub fn lk_xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getLkXhtID")
             .original_result()
     }
 }

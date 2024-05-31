@@ -1,4 +1,3 @@
-use x_housing_module::x_housing::distribution::ProxyTrait as _;
 use xht::{XHTTrait, XHT};
 
 multiversx_sc::imports!();

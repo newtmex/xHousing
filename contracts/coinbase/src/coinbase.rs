@@ -1,6 +1,5 @@
 #![no_std]
 
-pub mod coinbase_proxy;
 mod x_housing_interactions;
 pub mod x_project_funding_interactions;
 

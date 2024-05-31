@@ -4,7 +4,6 @@ pub mod distribution;
 pub mod permission;
 pub mod staking;
 pub mod users;
-pub mod x_housing_proxy;
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;

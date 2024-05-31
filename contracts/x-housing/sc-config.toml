@@ -1,2 +1,4 @@
+[settings]
+
 [[proxy]]
-path = "src/x_housing_proxy.rs"
+path = "../../rust-packages/x-housing-utils/src/contracts_proxy/x_housing_proxy.rs"

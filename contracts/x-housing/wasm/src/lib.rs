@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           10
+// Endpoints:                           12
 // Async Callback:                       1
-// Total number of exported functions:  13
+// Total number of exported functions:  15
 
 #![no_std]
 
@@ -23,6 +23,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         createRefID => create_ref_id
         create_ref_id_via_proxy => create_ref_id_via_proxy
         add_x_project => add_x_project
+        set_lk_xht_id => set_lk_xht_id
         registerXst => register_xst_token
         getAffiliateDetails => get_affiliate_details
         getXhtID => xht
@@ -30,6 +31,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         set_up_xht => set_up_xht
         add_project_rent => add_project_rent
         stake => stake
+        getLkXhtID => lk_xht
     )
 }
 

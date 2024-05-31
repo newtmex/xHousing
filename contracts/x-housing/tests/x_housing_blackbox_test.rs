@@ -4,7 +4,7 @@ use multiversx_sc::{
 };
 use multiversx_sc_scenario::imports::*;
 
-use x_housing::*;
+use utils::contracts_proxy::*;
 
 const X_HOUSING_CODE_PATH: MxscPath = MxscPath::new("output/x-housing.mxsc.json");
 

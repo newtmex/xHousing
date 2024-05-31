@@ -1,3 +1,4 @@
+use x_housing_utils::contracts_proxy::x_project_funding_proxy;
 use xht::{XHTTrait, XHT};
 
 multiversx_sc::imports!();
@@ -16,8 +17,9 @@ pub trait XProjectFundingInteraction: xht::XHTModule {
         funding_goal: BigUint,
         funding_deadline: u64,
     ) {
-        let _: IgnoreValue = self
-            .x_project_funding_proxy(x_project_funding_addr)
+        self.tx()
+            .to(x_project_funding_addr)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
             .init_first_x_project(
                 xproject_template,
                 xhousing_address,
@@ -25,10 +27,7 @@ pub trait XProjectFundingInteraction: xht::XHTModule {
                 funding_goal,
                 funding_deadline,
             )
-            .with_esdt_transfer(self.make_xht_payment(XHT::ico_funds()))
-            .execute_on_dest_context();
+            .payment(self.make_xht_payment(XHT::ico_funds()))
+            .sync_call();
     }
-
-    #[proxy]
-    fn x_project_funding_proxy(&self, addr: ManagedAddress) -> x_project_funding::Proxy<Self::Api>;
 }

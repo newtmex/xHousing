@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies.multiversx-sc]
 version = "=0.50.1"
 
-[dependencies.x-housing]
-path = "../../contracts/x-housing"
+[dependencies.utils]
+package = "x-housing-utils"
+path = "../x-housing-utils"

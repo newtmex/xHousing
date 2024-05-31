@@ -3,14 +3,12 @@
 pub mod rents;
 pub mod reward_sharing;
 pub mod token;
-pub mod x_project_proxy;
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
 use multiversx_sc_modules::default_issue_callbacks;
 use reward_sharing::RewardShares;
 use token::attributes::XPTokenAttributes;
-use x_housing_module::x_housing::users::ProxyTrait as _;
 
 /// # xProject Contract Template
 ///

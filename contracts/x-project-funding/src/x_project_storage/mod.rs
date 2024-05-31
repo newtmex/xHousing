@@ -4,8 +4,7 @@ use data::{Status, XProjectStorage};
 
 mod data;
 use lk_xht_module::default_issue_callbacks;
-use x_housing_module::x_housing::ProxyTrait as _;
-use x_project::token::ProxyTrait as _;
+use utils::contracts_proxy::x_project_proxy;
 use xht::{XHTTrait, XHT};
 
 multiversx_sc::imports!();
@@ -99,8 +98,12 @@ pub trait XProjectInteraction:
         }
     }
 
-    fn call_x_project(&self, addr: ManagedAddress) -> x_project::ProxyTo<Self::Api> {
-        self.x_project_proxy().contract(addr)
+    fn call_x_project(
+        &self,
+        addr: ManagedAddress,
+    ) -> x_project_proxy::XProjectProxyMethods<TxScEnv<Self::Api>, (), ManagedAddress<Self::Api>, ()>
+    {
+        self.tx().to(addr).typed(x_project_proxy::XProjectProxy)
     }
 
     #[view(getXProjectTokenID)]
@@ -116,9 +119,6 @@ pub trait XProjectInteraction:
     fn x_project_address(&self, project_id: usize) -> ManagedAddress {
         self.x_project_storage().get_project(project_id).address
     }
-
-    #[proxy]
-    fn x_project_proxy(&self) -> x_project::Proxy<Self::Api>;
 
     #[storage_mapper("xproject_template")]
     fn xproject_template(&self) -> SingleValueMapper<ManagedAddress>;

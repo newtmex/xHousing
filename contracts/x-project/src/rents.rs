@@ -1,6 +1,5 @@
 use multiversx_sc_modules::default_issue_callbacks;
 use utils::helpers::percent_share_factory;
-use x_housing_module::x_housing::distribution::ProxyTrait as _;
 
 use crate::token;
 

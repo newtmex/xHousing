@@ -1,10 +1,9 @@
-use coinbase::*;
+use x_housing_utils::contracts_proxy::*;
 
 use multiversx_sc::types::{TestAddress, TestSCAddress};
 use multiversx_sc_scenario::{api::StaticApi, imports::*, ScenarioWorld};
-use x_housing_module::x_housing::{self, x_housing_proxy};
-use x_project::{token::attributes::XPTokenAttributes, x_project_proxy};
-use x_project_funding::{lk_xht_module::LkXhtAttributes, x_project_funding_proxy};
+use x_project::token::attributes::XPTokenAttributes;
+use x_project_funding::lk_xht_module::LkXhtAttributes;
 use xht::{XHTTrait, XHT};
 
 type Xht = xht::XHT<StaticApi>;
@@ -99,7 +98,7 @@ impl CoinbaseTestState {
         self.world
             .tx()
             .from(CONTRACTS_OWNER)
-            .typed(x_project_funding::x_project_funding_proxy::XProjectFundingProxy)
+            .typed(x_project_funding_proxy::XProjectFundingProxy)
             .init(COINBASE_ADDR)
             .code(X_PROJECT_FUNDING_CODE_PATH)
             .new_address(X_PROJECT_FUNDING_ADDR)
