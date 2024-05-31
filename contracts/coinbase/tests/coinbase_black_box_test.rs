@@ -147,6 +147,13 @@ impl CoinbaseTestState {
             .register_lk_xht_token()
             .run();
 
+        let lk_xht_id = self.get_lk_xht_id();
+        self.world.set_esdt_local_roles(
+            X_PROJECT_FUNDING_ADDR,
+            lk_xht_id.to_boxed_bytes().as_slice(),
+            &[EsdtLocalRole::NftUpdateAttributes, EsdtLocalRole::NftCreate],
+        );
+
         self.world
             .tx()
             .to(COINBASE_ADDR)
@@ -431,7 +438,7 @@ fn test_claim_x_project_tokens() {
     let xht_id = state.get_xht_id();
     let project1_token_id = state.get_project_token_id(1);
 
-    let lk_attr = |balance| LkXhtAttributes::new(15_000, balance);
+    let lk_attr = |balance| LkXhtAttributes::new(0, balance);
 
     let depositor1_xht_claim = XHT::from_parts(5_653_846, 152_116_481_831_923_585);
     state
@@ -477,12 +484,6 @@ fn test_claim_x_project_tokens() {
             ),
         );
 
-    state.world.set_esdt_local_roles(
-        X_PROJECT_FUNDING_ADDR,
-        lk_xht_token.to_boxed_bytes().as_slice(),
-        &[EsdtLocalRole::NftUpdateAttributes],
-    );
-
     state.set_block_timestamp(25_000);
     state
         .world
@@ -507,16 +508,15 @@ fn test_claim_x_project_tokens() {
         .world
         .check_account(depositor1)
         .esdt_balance(&xht_id, &depositor1_xht_claimed);
-    // TODO
-    // state
-    //     .world
-    //     .check_account(depositor1)
-    //     .esdt_nft_balance_and_attributes(
-    //         &lk_xht_token,
-    //         1,
-    //         &depositor1_xht_claim,
-    //         lk_attr(&depositor1_xht_claim - &depositor1_xht_claimed),
-    //     );
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &lk_xht_token,
+            1,
+            &depositor1_xht_claim,
+            lk_attr(&depositor1_xht_claim - &depositor1_xht_claimed),
+        );
 
     // Move far away from locked duration
     state.set_block_timestamp(x_project_funding::lk_xht_module::LOCK_DURATION + 50_000);
@@ -537,16 +537,15 @@ fn test_claim_x_project_tokens() {
         .world
         .check_account(depositor1)
         .esdt_balance(&xht_id, XHT::from_parts(5_653_846, 152_116_481_831_923_585));
-    // TODO
-    // state
-    //     .world
-    //     .check_account(depositor1)
-    //     .esdt_nft_balance_and_attributes(
-    //         &lk_xht_token,
-    //         1,
-    //         &depositor1_xht_claim,
-    //         lk_attr(0u64.into()),
-    //     );
+    state
+        .world
+        .check_account(depositor1)
+        .esdt_nft_balance_and_attributes(
+            &lk_xht_token,
+            1,
+            &depositor1_xht_claim,
+            lk_attr(0u64.into()),
+        );
 }
 
 #[test]

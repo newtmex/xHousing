@@ -23,6 +23,7 @@ path = "../x-project-funding"
 
 [dev-dependencies]
 num-bigint = "0.4"
+hex = "0.4"
 
 [dev-dependencies.multiversx-sc-scenario]
 version = "=0.50.1"
