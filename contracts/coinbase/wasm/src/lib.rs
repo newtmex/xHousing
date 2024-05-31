@@ -23,7 +23,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         register_xht => register_xht
         getXhtID => xht
         feed_x_housing => feed_x_housing
-        lastDispatchEpoch => x_housing_last_dispatch
+        lastDispatchEpoch => x_housing_is_dispatched
         start_ico => start_ico
     )
 }

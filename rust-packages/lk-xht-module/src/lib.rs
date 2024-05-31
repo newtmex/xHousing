@@ -9,7 +9,7 @@ multiversx_sc::derive_imports!();
 // 3 years
 pub const LOCK_DURATION: u64 = 3 * 366 * 24 * 60 * 60;
 
-#[derive(TopEncode, TopDecode)]
+#[derive(TopEncode, TopDecode, NestedDecode, NestedEncode, Clone)]
 pub struct LkXhtAttributes<M: ManagedTypeApi> {
     pub xht_amount: BigUint<M>,
     pub start_timestamp: u64,

@@ -1,12 +1,15 @@
 #![no_std]
 
-pub mod coinbase_interaction;
 pub mod distribution;
+pub mod permission;
+pub mod staking;
 pub mod users;
 pub mod x_housing_proxy;
 
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
+use permission::Permissions;
+use xst::{default_issue_callbacks, lk_xht};
 
 /// xHousing leverages blockchain technology to revolutionise real estate investment and development by enabling the tokenisation of properties,
 /// allowing for fractional ownership and ease of investment.This innovative approach addresses the high costs and limited access to real estate
@@ -21,10 +24,14 @@ use multiversx_sc::imports::*;
 pub trait XHousing:
     users::UsersModule
     + utils::UtilsModule
-    + coinbase_interaction::CoinbaseInteraction
     + xht::XHTModule
+    + xst::XstModule
+    + default_issue_callbacks::DefaultIssueCallbacksModule
     + distribution::DistributionModule
     + coinbase_module::CoinbaseModule
+    + staking::StakeModule
+    + permission::PermissionsModule
+    + lk_xht::LkXhtModule
 {
     #[init]
     fn init(&self, coinbase: ManagedAddress, x_project_funding: ManagedAddress) {
@@ -63,6 +70,36 @@ pub trait XHousing:
         );
 
         self.create_or_get_user_id(&user_addr, referrer_id)
+    }
+
+    #[endpoint]
+    fn add_x_project(&self, address: ManagedAddress) {
+        self.require_caller_is_x_project_funding();
+
+        self.set_permissions(address, Permissions::X_PROJECT);
+    }
+
+    #[endpoint]
+    fn set_lk_xht_id(&self, token_id: TokenIdentifier<Self::Api>) {
+        self.require_caller_is_x_project_funding();
+
+        self.lk_xht().set_if_empty(token_id);
+    }
+
+    #[only_owner]
+    #[payable("EGLD")]
+    #[endpoint(registerXst)]
+    fn register_xst_token(&self) {
+        let issue_amount = self.call_value().egld_value();
+
+        self.xst().issue_and_set_all_roles(
+            EsdtTokenType::NonFungible,
+            issue_amount.clone_value(),
+            b"XStakingToken".into(),
+            b"XST".into(),
+            0,
+            None,
+        );
     }
 
     fn require_caller_is_x_project_funding(&self) {

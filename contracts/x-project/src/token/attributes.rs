@@ -3,14 +3,7 @@ multiversx_sc::derive_imports!();
 
 #[type_abi]
 #[derive(
-    ManagedVecItem,
-    TopEncode,
-    TopDecode,
-    NestedEncode,
-    NestedDecode,
-    Clone,
-    PartialEq,
-    Debug,
+    ManagedVecItem, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone, PartialEq, Debug,
 )]
 pub struct XPTokenAttributes<M: ManagedTypeApi> {
     pub reward_per_share: BigUint<M>,

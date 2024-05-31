@@ -60,6 +60,10 @@ pub trait XProjectFunding:
         self.xproject_template().set(&xproject_template);
         self.set_x_housing_addr(x_housing_address);
 
+        self.call_x_housing()
+            .set_lk_xht_id(self.lk_xht().get_token_id())
+            .sync_call();
+
         self.deploy_x_project(funding_token_id, funding_goal, funding_deadline);
     }
 

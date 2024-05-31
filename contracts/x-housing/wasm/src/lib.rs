@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                            5
-// Async Callback (empty):               1
-// Total number of exported functions:   8
+// Endpoints:                           10
+// Async Callback:                       1
+// Total number of exported functions:  13
 
 #![no_std]
 
@@ -22,10 +22,15 @@ multiversx_sc_wasm_adapter::endpoints! {
         upgrade => upgrade
         createRefID => create_ref_id
         create_ref_id_via_proxy => create_ref_id_via_proxy
+        add_x_project => add_x_project
+        registerXst => register_xst_token
         getAffiliateDetails => get_affiliate_details
-        top_up_xht => top_up_xht
         getXhtID => xht
+        getXstID => xst
+        set_up_xht => set_up_xht
+        add_project_rent => add_project_rent
+        stake => stake
     )
 }
 
-multiversx_sc_wasm_adapter::async_callback_empty! {}
+multiversx_sc_wasm_adapter::async_callback! { x_housing }

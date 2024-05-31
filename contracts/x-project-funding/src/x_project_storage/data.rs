@@ -135,7 +135,7 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
             deposit > BigUint::zero(),
             b"Invalid user project deposited amount",
         );
-        
+
         (project, deposit)
     }
 

@@ -121,6 +121,27 @@ where
             .original_result()
     }
 
+    pub fn add_x_project<
+        Arg0: ProxyArg<ManagedAddress<Env::Api>>,
+    >(
+        self,
+        address: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("add_x_project")
+            .argument(&address)
+            .original_result()
+    }
+
+    pub fn register_xst_token(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("registerXst")
+            .original_result()
+    }
+
     pub fn get_affiliate_details<
         Arg0: ProxyArg<ManagedAddress<Env::Api>>,
     >(
@@ -134,20 +155,63 @@ where
             .original_result()
     }
 
-    pub fn top_up_xht(
-        self,
-    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
-        self.wrapped_tx
-            .raw_call("top_up_xht")
-            .original_result()
-    }
-
     pub fn xht(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("getXhtID")
+            .original_result()
+    }
+
+    pub fn xst(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXstID")
+            .original_result()
+    }
+
+    pub fn set_up_xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("set_up_xht")
+            .original_result()
+    }
+
+    pub fn add_project_rent<
+        Arg0: ProxyArg<TokenIdentifier<Env::Api>>,
+        Arg1: ProxyArg<BigUint<Env::Api>>,
+        Arg2: ProxyArg<BigUint<Env::Api>>,
+    >(
+        self,
+        project_token_id: Arg0,
+        rent_amount: Arg1,
+        max_shares: Arg2,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("add_project_rent")
+            .argument(&project_token_id)
+            .argument(&rent_amount)
+            .argument(&max_shares)
+            .original_result()
+    }
+
+    pub fn stake<
+        Arg0: ProxyArg<u64>,
+        Arg1: ProxyArg<OptionalValue<usize>>,
+    >(
+        self,
+        epochs_lock: Arg0,
+        referrer_id: Arg1,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("stake")
+            .argument(&epochs_lock)
+            .argument(&referrer_id)
             .original_result()
     }
 }

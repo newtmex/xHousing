@@ -1,9 +1,7 @@
-use x_housing_module::x_housing::coinbase_interaction::ProxyTrait as _;
-use xht::{economics::emission::EmissionTrait, XHT};
+use x_housing_module::x_housing::distribution::ProxyTrait as _;
+use xht::{XHTTrait, XHT};
 
 multiversx_sc::imports!();
-
-const FEED_INTERVAL: u64 = 7;
 
 #[multiversx_sc::module]
 pub trait XHousingModule: xht::XHTModule + x_housing_module::XHousingModule {
@@ -11,46 +9,30 @@ pub trait XHousingModule: xht::XHTModule + x_housing_module::XHousingModule {
     #[only_owner]
     #[endpoint]
     fn feed_x_housing(&self, x_housing_address: OptionalValue<ManagedAddress>) {
-        let last_dispatch_mapper = self.x_housing_last_dispatch();
-        let epoch_start = last_dispatch_mapper.get();
-        let block_epoch = self.blockchain().get_block_epoch();
+        let last_dispatch_mapper = self.x_housing_is_dispatched();
+        let is_dispatched = last_dispatch_mapper.get() > 0;
 
         if let Some(x_housing_address) = x_housing_address.into_option() {
-            require!(epoch_start == 0, "genesis dispatch already done");
-
             self.set_x_housing_addr(x_housing_address);
-            self.x_housing_genesis_epoch().set(block_epoch)
         }
 
-        let epoch_start = last_dispatch_mapper.get();
-        let current_epoch = block_epoch - self.x_housing_genesis_epoch().get();
-        require!(epoch_start <= current_epoch, "feed epoch not reached");
-
-        let mut epoch_end = current_epoch + FEED_INTERVAL;
-        // Ensure it's multiple of FEED_INTERVAL
-        epoch_end /= FEED_INTERVAL;
-        epoch_end *= FEED_INTERVAL;
-
         // Ensure data integrity
-        require!(epoch_end > epoch_start, "Epochs computation error");
+        require!(!is_dispatched, "Already dispatched");
 
-        let amount_to_dispatch = XHT::emission_through_epoch_range(epoch_start, epoch_end);
+        let amount_to_dispatch = XHT::ecosystem_distibution_funds();
         let xht_payment = self.make_xht_payment(amount_to_dispatch);
 
         let _: IgnoreValue = self
             .call_x_housing()
-            .top_up_xht()
+            .set_up_xht()
             .with_esdt_transfer(xht_payment)
             .execute_on_dest_context();
 
-        last_dispatch_mapper.set(epoch_end);
+        last_dispatch_mapper.set(1);
     }
 
     /// The last epoch that x_housing received XHT
     #[view(lastDispatchEpoch)]
-    #[storage_mapper("x_housing::lastXHTsDispatch")]
-    fn x_housing_last_dispatch(&self) -> SingleValueMapper<u64>;
-
-    #[storage_mapper("x_housing::genesis_epoch")]
-    fn x_housing_genesis_epoch(&self) -> SingleValueMapper<u64>;
+    #[storage_mapper("x_housing::isDispatched")]
+    fn x_housing_is_dispatched(&self) -> SingleValueMapper<u64>;
 }

@@ -113,7 +113,7 @@ where
     }
 
     /// The last epoch that x_housing received XHT 
-    pub fn x_housing_last_dispatch(
+    pub fn x_housing_is_dispatched(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, u64> {
         self.wrapped_tx

@@ -1,5 +1,6 @@
 use multiversx_sc_modules::default_issue_callbacks;
 use utils::helpers::percent_share_factory;
+use x_housing_module::x_housing::distribution::ProxyTrait as _;
 
 use crate::token;
 
@@ -9,7 +10,10 @@ pub const DIVISION_SAFTETY_CONST: u64 = 1_000_000_000_000_000_000;
 
 #[multiversx_sc::module]
 pub trait RentsModule:
-    xht::XHTModule + token::XPTokenModule + default_issue_callbacks::DefaultIssueCallbacksModule
+    xht::XHTModule
+    + token::XPTokenModule
+    + default_issue_callbacks::DefaultIssueCallbacksModule
+    + x_housing_module::XHousingModule
 {
     #[payable("*")]
     #[endpoint(receiveRent)]
@@ -20,22 +24,32 @@ pub trait RentsModule:
         // TODO set the appropriate rent per xProject
         require!(rent_payment.amount > 0, "Insufficient rent amount");
 
-        let mut rent_share = percent_share_factory::<Self::Api, _>(&rent_payment.amount,100);
+        {
+            let mut rent_share = percent_share_factory::<Self::Api, _>(&rent_payment.amount, 100);
 
-        let rent_reward = rent_share(75);
-        let ecosystem_reward = rent_share(18);
-        let facility_reward = rent_share(7);
+            let rent_reward = rent_share(75);
+            let ecosystem_reward = rent_share(18);
+            let facility_reward = rent_share(7);
 
-        let all_shares = self.xp_token_max_supply().get();
-        let rps_increase = (&rent_reward * DIVISION_SAFTETY_CONST) / all_shares;
+            let all_shares = self.xp_token_max_supply().get();
+            let rps_increase = (&rent_reward * DIVISION_SAFTETY_CONST) / all_shares;
 
-        self.reward_per_share().update(|rps| *rps += rps_increase);
-        self.rewards_reserve()
-            .update(|reserve| *reserve += rent_reward);
-        self.facility_management_funds()
-            .update(|fund| *fund += facility_reward);
+            self.reward_per_share().update(|rps| *rps += rps_increase);
+            self.rewards_reserve()
+                .update(|reserve| *reserve += rent_reward);
+            self.facility_management_funds()
+                .update(|fund| *fund += facility_reward);
 
-        self.xht().burn(&ecosystem_reward);
+            self.xht().burn(&ecosystem_reward);
+        }
+
+        self.call_x_housing()
+            .add_project_rent(
+                self.xp_token().get_token_id(),
+                rent_payment.amount,
+                self.xp_token_max_supply().get(),
+            )
+            .sync_call();
     }
 
     #[storage_mapper("rewards_reserve")]

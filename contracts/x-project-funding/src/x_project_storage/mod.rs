@@ -4,6 +4,7 @@ use data::{Status, XProjectStorage};
 
 mod data;
 use lk_xht_module::default_issue_callbacks;
+use x_housing_module::x_housing::ProxyTrait as _;
 use x_project::token::ProxyTrait as _;
 use xht::{XHTTrait, XHT};
 
@@ -11,17 +12,21 @@ multiversx_sc::imports!();
 
 #[multiversx_sc::module]
 pub trait XProjectInteraction:
-    xht::XHTModule + lk_xht_module::LkXhtModule + default_issue_callbacks::DefaultIssueCallbacksModule
+    xht::XHTModule
+    + lk_xht_module::LkXhtModule
+    + default_issue_callbacks::DefaultIssueCallbacksModule
+    + x_housing_module::XHousingModule
 {
     #[only_owner]
     #[payable("EGLD")]
     #[endpoint(registerLkXht)]
     fn register_lk_xht_token(&self) {
-        let genesis_project = self.x_project_storage().get_project(1);
-        require!(
-            genesis_project.status() == Status::Successful,
-            "First XProject Funding not yet successful"
-        );
+        // TODO: is this neccessary?
+        // let genesis_project = self.x_project_storage().get_project(1);
+        // require!(
+        //     genesis_project.status() == Status::Successful,
+        //     "First XProject Funding not yet successful"
+        // );
 
         let payment_amount = self.call_value().egld_value();
 
@@ -51,6 +56,10 @@ pub trait XProjectInteraction:
         if project.id == 1 {
             require!(!self.lk_xht().is_empty(), "Locked XHT not set yet");
         }
+
+        self.call_x_housing()
+            .add_x_project(&project.address)
+            .sync_call();
 
         let _: IgnoreValue = self
             .call_x_project(project.address)

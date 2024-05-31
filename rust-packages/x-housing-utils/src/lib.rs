@@ -1,9 +1,9 @@
 #![no_std]
 multiversx_sc::imports!();
 
+pub mod helpers;
 pub mod storage;
 pub mod types;
-pub mod helpers;
 
 #[multiversx_sc::module]
 pub trait UtilsModule {

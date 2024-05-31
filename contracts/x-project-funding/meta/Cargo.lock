@@ -723,10 +723,13 @@ dependencies = [
 name = "x-housing"
 version = "0.0.0"
 dependencies = [
+ "bitflags",
  "coinbase-module",
  "multiversx-sc",
+ "multiversx-sc-modules",
  "x-housing-utils",
  "xht-module",
+ "xst-module",
 ]
 
 [[package]]
@@ -781,6 +784,16 @@ name = "xht-module"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+ "x-housing-utils",
+]
+
+[[package]]
+name = "xst-module"
+version = "0.1.0"
+dependencies = [
+ "lk-xht-module",
+ "multiversx-sc",
+ "multiversx-sc-modules",
  "x-housing-utils",
 ]
 

@@ -11,6 +11,9 @@ path = "src/x_housing.rs"
 [dependencies.multiversx-sc]
 version = "=0.50.1"
 
+[dependencies.multiversx-sc-modules]
+version = "=0.50.1"
+
 [dependencies.utils]
 package = "x-housing-utils"
 path = "../../rust-packages/x-housing-utils"
@@ -21,6 +24,13 @@ path = "../../rust-packages/coinbase-module"
 [dependencies.xht]
 package = "xht-module"
 path = "../../rust-packages/xht-module"
+
+[dependencies.xst]
+package = "xst-module"
+path = "../../rust-packages/xst-module"
+
+[dependencies]
+bitflags = "2.4.1"
 
 [dev-dependencies]
 num-bigint = "0.4"
