@@ -65,3 +65,39 @@ pub trait LkXhtModule: default_issue_callbacks::DefaultIssueCallbacksModule {
     #[storage_mapper("lk-xht-module::start-timestamp")]
     fn lk_xht_start_timestamp(&self) -> SingleValueMapper<u64>;
 }
+
+#[cfg(test)]
+mod tests {
+    use multiversx_sc_scenario::api::SingleTxApi;
+
+    use crate::{LkXhtAttributes, LOCK_DURATION};
+
+    #[test]
+    fn test_unlock_matured() {
+        let xht_amount = 250_000u64;
+        let attr = LkXhtAttributes::<SingleTxApi>::new(0, xht_amount.into());
+
+        let check_matured =
+            |time_percent: u64, expected_matured: u64, attr: LkXhtAttributes<SingleTxApi>| {
+                SingleTxApi::with_global(|data| {
+                    data.current_block_info.block_timestamp = LOCK_DURATION * time_percent / 100;
+                });
+                let (matured, attr) = attr.unlock_matured();
+
+                assert_eq!(
+                    matured.to_u64().unwrap(),
+                    expected_matured,
+                    "None sohuld be matured"
+                );
+
+                attr
+            };
+
+        let attr = check_matured(0, 0, attr);
+        let attr = check_matured(10, 25_000, attr);
+        let attr = check_matured(30, 67_500, attr);
+        let attr = check_matured(50, 78_750, attr);
+        let attr = check_matured(120, 78_750, attr);
+        let _attr = check_matured(130, 0, attr);
+    }
+}
