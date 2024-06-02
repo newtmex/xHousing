@@ -160,6 +160,15 @@ where
             .original_result()
     }
 
+    pub fn lk_xht(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getLkXhtID")
+            .original_result()
+    }
+
     pub fn register_lk_xht_token(
         self,
     ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
@@ -219,15 +228,6 @@ where
             .payment(NotPayable)
             .raw_call("getXProjectAddress")
             .argument(&project_id)
-            .original_result()
-    }
-
-    pub fn lk_xht(
-        self,
-    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
-        self.wrapped_tx
-            .payment(NotPayable)
-            .raw_call("getLkXhtID")
             .original_result()
     }
 }

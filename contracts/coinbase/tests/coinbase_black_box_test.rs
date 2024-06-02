@@ -5,8 +5,7 @@ use multiversx_sc::types::{TestAddress, TestSCAddress};
 use multiversx_sc_scenario::{
     api::StaticApi, imports::*, multiversx_chain_vm::world_mock::BlockInfo, ScenarioWorld,
 };
-use x_housing_utils::contracts_proxy::*;
-use x_project::token::attributes::XPTokenAttributes;
+use x_housing_utils::{contracts_proxy::*, xpt_attributes::XPTokenAttributes};
 use x_project_funding::lk_xht_module::LkXhtAttributes;
 use xht::{XHTTrait, XHT};
 
@@ -78,6 +77,13 @@ impl CoinbaseTestState {
             .typed(x_housing_proxy::XHousingProxy)
             .register_xst_token()
             .run();
+
+        let xht_id = self.get_xht_id();
+        self.world.set_esdt_local_roles(
+            X_HOUSING_ADDR,
+            xht_id.to_boxed_bytes().as_slice(),
+            &[EsdtLocalRole::Burn],
+        );
     }
 
     fn deploy_coinbase(&mut self) {
@@ -220,6 +226,18 @@ impl CoinbaseTestState {
             .typed(x_housing_proxy::XHousingProxy)
             .stake(epochs_lock, referrer_id)
             .multi_esdt(payments)
+            .run();
+    }
+
+    fn claim_staking_rewards(&mut self, depositor: TestAddress, token_nonce: u64) {
+        let xst_id = self.get_xst_id();
+        self.world
+            .tx()
+            .from(depositor)
+            .to(X_HOUSING_ADDR)
+            .typed(x_housing_proxy::XHousingProxy)
+            .claim_rewards(OptionalValue::<usize>::None)
+            .payment(EsdtTokenPayment::new(xst_id, token_nonce, 1u64.into()))
             .run();
     }
 
@@ -516,13 +534,13 @@ fn test_claim_x_project_tokens() {
     let xht_id = state.get_xht_id();
     let lk_attr = |balance| LkXhtAttributes::new(0, balance);
 
-    let depositor1_xht_claim = XHT::from_parts(5653846, 152116481831923585);
+    let mut depositor1_lk_xht_attr = lk_attr(XHT::from_parts(5653846, 152116481831923585));
     state.check_xht_bal(depositor1, &0u64.into());
     state.check_lk_xht_bal(
         depositor1,
         1,
-        &depositor1_xht_claim,
-        &lk_attr(depositor1_xht_claim.clone()),
+        &depositor1_lk_xht_attr.initial_xht_amount,
+        &depositor1_lk_xht_attr,
     );
     state.check_xpt_bal(1, depositor1, 1, 769_230u64.into());
 
@@ -535,9 +553,14 @@ fn test_claim_x_project_tokens() {
 
     state.check_xht_bal(depositor1, &0u64.into());
 
-    state.unlock_xht(depositor1, 1, depositor1_xht_claim.clone());
+    state.unlock_xht(
+        depositor1,
+        1,
+        depositor1_lk_xht_attr.initial_xht_amount.clone(),
+    );
 
     let depositor1_xht_claimed = XHT::from_parts(10_727, 546584920464920923);
+    depositor1_lk_xht_attr.xht_amount -= &depositor1_xht_claimed;
     state
         .world
         .check_account(depositor1)
@@ -545,19 +568,29 @@ fn test_claim_x_project_tokens() {
     state.check_lk_xht_bal(
         depositor1,
         1,
-        &depositor1_xht_claim,
-        &lk_attr(&depositor1_xht_claim - &depositor1_xht_claimed),
+        &depositor1_lk_xht_attr.initial_xht_amount,
+        &depositor1_lk_xht_attr,
     );
 
     // Move far away from locked duration
     state.move_block_rounds((x_project_funding::lk_xht_module::LOCK_DURATION / 6_000) + 50);
-    state.unlock_xht(depositor1, 1, depositor1_xht_claim.clone());
+    state.unlock_xht(
+        depositor1,
+        1,
+        depositor1_lk_xht_attr.initial_xht_amount.clone(),
+    );
+    depositor1_lk_xht_attr.xht_amount = 0u64.into();
 
     state.check_xht_bal(
         depositor1,
         &XHT::from_parts(5_653_846, 152_116_481_831_923_585),
     );
-    state.check_lk_xht_bal(depositor1, 1, &depositor1_xht_claim, &lk_attr(0u64.into()));
+    state.check_lk_xht_bal(
+        depositor1,
+        1,
+        &depositor1_lk_xht_attr.initial_xht_amount,
+        &depositor1_lk_xht_attr,
+    );
 }
 
 #[test]
@@ -620,7 +653,7 @@ fn test_claim_rent_reward() {
 }
 
 #[test]
-fn test_staking() {
+fn test_staking_and_claiming_on_xst() {
     let mut state = CoinbaseTestState::new();
 
     let depositor1 = TestAddress::new("depositor1");
@@ -661,8 +694,40 @@ fn test_staking() {
         200,
         OptionalValue::None,
         vec![
-            EsdtTokenPayment::new(project1_token_id, 1, 0u64.into()),
-            EsdtTokenPayment::new(lk_xht_id, 1, 0u64.into()),
+            EsdtTokenPayment::new(project1_token_id.clone(), 1, 0u64.into()),
+            EsdtTokenPayment::new(
+                lk_xht_id.clone(),
+                1,
+                XHT::from_parts(1696153, 845634944549577075),
+            ),
         ],
     );
+
+    let xht_from_rent_claim = XHT::from(3151u64);
+
+    state.check_xht_bal(depositor2, &0u64.into());
+    state.claim_staking_rewards(depositor2, 1);
+    state.check_xht_bal(depositor2, &xht_from_rent_claim);
+
+    // Claim after some blocks
+    state.move_block_rounds(50_000);
+    state.claim_staking_rewards(depositor2, 1);
+    state.check_xht_bal(
+        depositor2,
+        &(xht_from_rent_claim + XHT::from_parts(646, 842510176967016442)),
+    );
+
+    // For completion
+    state.claim_x_project_tokens(depositor1, 1usize);
+    state.stake(
+        depositor1,
+        1080,
+        OptionalValue::None,
+        vec![
+            EsdtTokenPayment::new(project1_token_id, 2, 0u64.into()),
+            EsdtTokenPayment::new(lk_xht_id, 2, XHT::from_parts(5653846, 152116481831923585)),
+        ],
+    );
+    state.move_block_rounds(50_000);
+    state.claim_staking_rewards(depositor1, 2);
 }

@@ -2,3 +2,7 @@
 
 [[proxy]]
 path = "../../rust-packages/x-housing-utils/src/contracts_proxy/x_project_proxy.rs"
+
+[[proxy.path-rename]]
+from = "x_housing_utils::xpt_attributes"
+to = "crate::xpt_attributes"

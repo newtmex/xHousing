@@ -1,7 +1,7 @@
 use multiversx_sc::{api::ManagedTypeApi, types::BigUint};
-use utils::helpers::percent_share_factory;
+use utils::{helpers::percent_share_factory, xpt_attributes::XPTokenAttributes};
 
-use crate::{rents::DIVISION_SAFTETY_CONST, token::attributes::XPTokenAttributes};
+use crate::rents::DIVISION_SAFTETY_CONST;
 
 pub struct RewardShares<M: ManagedTypeApi> {
     pub user_value: BigUint<M>,

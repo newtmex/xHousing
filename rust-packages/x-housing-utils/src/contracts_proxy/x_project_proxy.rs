@@ -87,7 +87,7 @@ where
 {
     pub fn claim_rent_reward(
         self,
-    ) -> TxTypedCall<Env, From, To, (), Gas, XPTokenAttributes<Env::Api>> {
+    ) -> TxTypedCall<Env, From, To, (), Gas, crate::xpt_attributes::XPTokenAttributes<Env::Api>> {
         self.wrapped_tx
             .raw_call("claimRentReward")
             .original_result()
@@ -179,15 +179,4 @@ where
             .raw_call("getXhtID")
             .original_result()
     }
-}
-
-#[type_abi]
-#[derive(ManagedVecItem, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone, PartialEq, Debug)]
-pub struct XPTokenAttributes<Api>
-where
-    Api: ManagedTypeApi,
-{
-    pub reward_per_share: BigUint<Api>,
-    pub token_weight: BigUint<Api>,
-    pub original_owner: ManagedAddress<Api>,
 }

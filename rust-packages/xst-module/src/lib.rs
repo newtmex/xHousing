@@ -17,7 +17,7 @@ pub const MAX_EPOCHS_LOCK: Epoch = 1080;
 
 #[derive(Clone, TopEncode, TopDecode, NestedDecode, NestedEncode)]
 pub struct XstAttributes<M: ManagedTypeApi> {
-    pub x_project_tokens: ArrayVec<(TokenIdentifier<M>, u64), 10>,
+    pub x_project_tokens: ArrayVec<EsdtTokenPayment<M>, 10>,
     /// Last total rewards for XPT since last reward dispatch
     pub x_projects_share_checkpoint: BigUint<M>,
     pub xht_reward_per_share: BigUint<M>,
@@ -57,18 +57,18 @@ pub trait XstModule:
         let mut xht_amount = BigUint::zero();
         let mut lk_xht: Option<(u64, LkXhtAttributes<Self::Api>)> = None;
 
+        let max_xpt_capacity = x_project_tokens.capacity();
         for payment in &payments {
             if payment.token_identifier == xht_id {
                 xht_amount = payment.amount
             } else if payment.token_identifier == self.lk_xht().get_token_id() {
                 let attr: LkXhtAttributes<Self::Api> =
                     self.lk_xht().get_token_attributes(payment.token_nonce);
-                // TODO
-                // require!(
-                //     payment.amount == attr.initial_xht_amount,
-                //     "Must send all amount: {}",
-                //     (attr.initial_xht_amount)
-                // );
+                require!(
+                    payment.amount == attr.initial_xht_amount,
+                    "Must send all amount: {}",
+                    (attr.initial_xht_amount)
+                );
 
                 lk_xht = Some((payment.token_nonce, attr));
             } else {
@@ -77,7 +77,13 @@ pub trait XstModule:
                         .contains_id(payment.token_identifier.as_managed_buffer()),
                     "Invalid xProject Token"
                 );
-                x_project_tokens.push((payment.token_identifier, payment.token_nonce));
+
+                require!(
+                    x_project_tokens.len() < max_xpt_capacity,
+                    "Max XProject Tokens is {}",
+                    max_xpt_capacity
+                );
+                x_project_tokens.push(payment);
             }
         }
 

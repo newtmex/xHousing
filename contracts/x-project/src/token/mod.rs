@@ -1,7 +1,5 @@
-use attributes::XPTokenAttributes;
 use multiversx_sc_modules::default_issue_callbacks;
-
-pub mod attributes;
+use utils::xpt_attributes::XPTokenAttributes;
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();

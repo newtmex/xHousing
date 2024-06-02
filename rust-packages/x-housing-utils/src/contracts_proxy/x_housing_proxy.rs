@@ -228,6 +228,18 @@ where
             .original_result()
     }
 
+    pub fn claim_rewards<
+        Arg0: ProxyArg<OptionalValue<usize>>,
+    >(
+        self,
+        referrer_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("claimRewards")
+            .argument(&referrer_id)
+            .original_result()
+    }
+
     pub fn lk_xht(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {

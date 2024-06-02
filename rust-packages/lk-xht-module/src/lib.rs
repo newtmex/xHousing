@@ -11,6 +11,7 @@ pub const LOCK_DURATION: u64 = 3 * 366 * 24 * 60 * 60;
 
 #[derive(TopEncode, TopDecode, NestedDecode, NestedEncode, Clone, Debug)]
 pub struct LkXhtAttributes<M: ManagedTypeApi> {
+    pub initial_xht_amount: BigUint<M>,
     pub xht_amount: BigUint<M>,
     pub start_timestamp: u64,
     pub end_timestamp: u64,
@@ -21,6 +22,7 @@ impl<M: ManagedTypeApi + BlockchainApi> LkXhtAttributes<M> {
         Self {
             start_timestamp,
             end_timestamp: start_timestamp + LOCK_DURATION,
+            initial_xht_amount: xht_amount.clone(),
             xht_amount,
         }
     }

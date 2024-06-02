@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           12
+// Endpoints:                           13
 // Async Callback:                       1
-// Total number of exported functions:  15
+// Total number of exported functions:  16
 
 #![no_std]
 
@@ -31,6 +31,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         set_up_xht => set_up_xht
         add_project_rent => add_project_rent
         stake => stake
+        claimRewards => claim_rewards
         getLkXhtID => lk_xht
     )
 }

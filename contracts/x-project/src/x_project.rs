@@ -8,7 +8,7 @@ pub mod token;
 use multiversx_sc::imports::*;
 use multiversx_sc_modules::default_issue_callbacks;
 use reward_sharing::RewardShares;
-use token::attributes::XPTokenAttributes;
+use utils::xpt_attributes::XPTokenAttributes;
 
 /// # xProject Contract Template
 ///
@@ -49,10 +49,11 @@ pub trait XProject:
             .xp_token()
             .get_token_attributes(xpt_payment.token_nonce);
 
-        require!(
-            current_rps > 0 && xpt_attr.reward_per_share < current_rps,
-            "No accumulated rewards yet"
-        );
+        if current_rps == 0 || xpt_attr.reward_per_share >= current_rps {
+            // Fail silently
+            self.tx().to(&caller).payment(xpt_payment).transfer();
+            return xpt_attr;
+        }
 
         let mut reward = reward_sharing::compute_reward(&xpt_attr, &current_rps);
         self.rewards_reserve().update(|reserve| {

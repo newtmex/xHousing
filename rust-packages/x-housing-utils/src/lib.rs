@@ -1,10 +1,11 @@
 #![no_std]
 multiversx_sc::imports!();
 
+pub mod contracts_proxy;
 pub mod helpers;
 pub mod storage;
 pub mod types;
-pub mod contracts_proxy;
+pub mod xpt_attributes;
 
 #[multiversx_sc::module]
 pub trait UtilsModule {
