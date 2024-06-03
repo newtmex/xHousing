@@ -20,10 +20,41 @@ pub struct XProjectDistributionData<M: ManagedTypeApi> {
     pub received_rents: BigUint<M>,
 }
 
-#[derive(TopDecode, TopEncode)]
+#[derive(TopEncode)]
 pub struct ProjectsStakingRewards<M: ManagedTypeApi> {
     pub to_share: BigUint<M>,
     pub checkpoint: BigUint<M>,
+}
+
+impl<M: ManagedTypeApi> TopDecode for ProjectsStakingRewards<M> {
+    fn top_decode<I>(input: I) -> Result<Self, DecodeError>
+    where
+        I: codec::TopDecodeInput,
+    {
+        let mut buffer = input.into_nested_buffer();
+        Self::dep_decode(&mut buffer)
+    }
+}
+
+impl<M: ManagedTypeApi> NestedDecode for ProjectsStakingRewards<M> {
+    fn dep_decode<I: codec::NestedDecodeInput>(input: &mut I) -> Result<Self, DecodeError> {
+        if input.is_depleted() {
+            // This will initialise the struct from an empty storage location
+            Ok(Self::default())
+        } else {
+            let to_share = BigUint::dep_decode(input)?;
+            let checkpoint = BigUint::dep_decode(input)?;
+
+            if !input.is_depleted() {
+                return Err(DecodeError::INPUT_TOO_LONG);
+            }
+
+            Ok(Self {
+                to_share,
+                checkpoint,
+            })
+        }
+    }
 }
 
 impl<M: ManagedTypeApi> Default for ProjectsStakingRewards<M> {
@@ -117,10 +148,7 @@ impl<SA: StorageMapperApi + BlockchainApi> DistributionStorage<SA> {
     }
 
     fn get_projects_staking_rewards(&self) -> ProjectsStakingRewards<SA> {
-        let mapper = self.projects_staking_rewards();
-        mapper.set_if_empty(ProjectsStakingRewards::<SA>::default());
-
-        mapper.get()
+        self.projects_staking_rewards().get()
     }
 
     pub(crate) fn claim_rewards(&self, attr: &mut XstAttributes<SA>) -> BigUint<SA> {
