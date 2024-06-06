@@ -46,6 +46,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
 
 [[package]]
+name = "lk-xht-module"
+version = "0.1.0"
+dependencies = [
+ "multiversx-sc",
+ "multiversx-sc-modules",
+ "x-housing-utils",
+]
+
+[[package]]
 name = "multiversx-sc"
 version = "0.50.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -93,6 +102,15 @@ dependencies = [
  "quote",
  "radix_trie",
  "syn",
+]
+
+[[package]]
+name = "multiversx-sc-modules"
+version = "0.50.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e77beee1a1aa0977ae40842dcae10e77ba830b6363a382a70bfce18671a7b35"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]
@@ -183,10 +201,13 @@ checksum = "151ac09978d3c2862c4e39b557f4eceee2cc72150bc4cb4f16abf061b6e381fb"
 name = "x-housing"
 version = "0.0.0"
 dependencies = [
+ "bitflags",
  "coinbase-module",
  "multiversx-sc",
+ "multiversx-sc-modules",
  "x-housing-utils",
  "xht-module",
+ "xst-module",
 ]
 
 [[package]]
@@ -209,5 +230,15 @@ name = "xht-module"
 version = "0.1.0"
 dependencies = [
  "multiversx-sc",
+ "x-housing-utils",
+]
+
+[[package]]
+name = "xst-module"
+version = "0.1.0"
+dependencies = [
+ "lk-xht-module",
+ "multiversx-sc",
+ "multiversx-sc-modules",
  "x-housing-utils",
 ]

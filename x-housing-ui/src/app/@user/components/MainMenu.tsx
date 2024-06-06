@@ -3,6 +3,7 @@
 import { ROUTES } from '@/utils/routes';
 import LoggedUserInfo from './LoggedUserInfo';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export default function MainMenu() {
   const pathname = usePathname();
@@ -24,12 +25,12 @@ export default function MainMenu() {
               pathname.startsWith(route.path) ? 'selected ' : ''
             }has-sub-menu`}
           >
-            <a href={route.path}>
+            <Link href={route.path}>
               <div className='icon-w'>
                 <div className={`os-icon os-icon-${route.osIcon}`}></div>
               </div>
               <span>{route.name}</span>
-            </a>
+            </Link>
             <div className='sub-menu-w'>
               <div className='sub-menu-header'>{route.name}</div>
               <div className='sub-menu-icon'>

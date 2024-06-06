@@ -1,8 +1,8 @@
 multiversx_sc::imports!();
 
-use data::{Status, XProjectStorage};
+use data::{Status, XProjectData, XProjectStorage};
 
-mod data;
+pub mod data;
 use lk_xht_module::default_issue_callbacks;
 use utils::contracts_proxy::x_project_proxy;
 use xht::{XHTTrait, XHT};
@@ -47,10 +47,11 @@ pub trait XProjectInteraction:
     #[payable("EGLD")]
     fn set_x_project_token(&self, project_id: usize, name: ManagedBuffer) {
         let project = self.x_project_storage().get_project(project_id);
-        require!(
-            project.status() == Status::Successful,
-            "XProject Funding not yet successful"
-        );
+        // TODO add this after demo, since we can't control blockchain state on public networks
+        // require!(
+        //     project.status() == Status::Successful,
+        //     "XProject Funding not yet successful"
+        // );
 
         if project.id == 1 {
             require!(!self.lk_xht().is_empty(), "Locked XHT not set yet");
@@ -58,16 +59,18 @@ pub trait XProjectInteraction:
 
         self.call_x_housing()
             .add_x_project(&project.address)
+            .gas(5_000_000)
             .sync_call();
 
         let _: IgnoreValue = self
             .call_x_project(project.address)
             .register_xp_token(name, project.collected_funds, self.xht().get_token_id())
             .egld(self.call_value().egld_value())
+            .gas(60_000_000)
             .execute_on_dest_context();
     }
 
-    #[endpoint]
+    #[endpoint(claimXProjectToken)]
     fn claim_x_project_tokens(&self, project_id: usize) {
         let depositor = self.blockchain().get_caller();
 
@@ -77,7 +80,7 @@ pub trait XProjectInteraction:
 
         let back_transfers = self
             .call_x_project(project.address)
-            .mint_xp_token(&deposit_amount, &depositor)
+            .mint_xp_token(&deposit_amount, &depositor, &project.collected_funds)
             .returns(ReturnsBackTransfers)
             .sync_call();
 
@@ -118,6 +121,16 @@ pub trait XProjectInteraction:
     #[view(getXProjectAddress)]
     fn x_project_address(&self, project_id: usize) -> ManagedAddress {
         self.x_project_storage().get_project(project_id).address
+    }
+
+    #[view(getXProjectData)]
+    fn x_project_data(&self, project_id: usize) -> XProjectData<Self::Api> {
+        self.x_project_storage().get_project(project_id)
+    }
+
+    #[view(getAllXProjectData)]
+    fn all_x_projects(&self) -> ManagedVec<Self::Api, XProjectData<Self::Api>> {
+        self.x_project_storage().get_projects()
     }
 
     #[storage_mapper("xproject_template")]

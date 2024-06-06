@@ -1,0 +1,282 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.76.0-nightly",
+            "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+            "commitDate": "2023-12-10",
+            "channel": "Nightly",
+            "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
+        },
+        "contractCrate": {
+            "name": "x-project-funding",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.50.1"
+        }
+    },
+    "docs": [
+        "The `xProjectFunding` contract is designed to manage the crowdfunding process for real estate projects",
+        "within the xHousing ecosystem. This contract facilitates the collection of funds from participants, handles",
+        "participant registrations, deploys the `xProject` contract upon successful funding, and disburses tokens (XHT and SFT)",
+        "to contributors. If the funding goal is not met by the deadline, it allows participants to withdraw their funds.",
+        "",
+        "## Key Features",
+        "- **Receive Funds:** Accept contributions from participants and track the total collected funds.",
+        "- **Participant Registration:** Register new participants in the xHousing contract if they are not already registered.",
+        "- **Funding Status Check:** Provide real-time updates on the funding status.",
+        "- **xProject Deployment:** Deploy the `xProject` contract when the funding goal is reached and disburse tokens.",
+        "- **Refund Participants:** Allow participants to withdraw their funds if the funding goal is not met by the deadline."
+    ],
+    "name": "XProjectFunding",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "coinbase",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "upgradeConstructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "init_first_x_project",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "xproject_template",
+                    "type": "Address"
+                },
+                {
+                    "name": "x_housing_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "funding_token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "funding_goal",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "funding_deadline",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "XProjectData"
+                }
+            ]
+        },
+        {
+            "name": "deployXProject",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "funding_token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "funding_goal",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "funding_deadline",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "XProjectData"
+                }
+            ]
+        },
+        {
+            "name": "fundProject",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "referrer_id",
+                    "type": "optional<u32>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "unlockXht",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "getXhtID",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getLkXhtID",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "registerLkXht",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "set_x_project_token",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "name",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "claimXProjectToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getXProjectTokenID",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getXProjectAddress",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getXProjectData",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "XProjectData"
+                }
+            ]
+        },
+        {
+            "name": "getAllXProjectData",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "List<XProjectData>"
+                }
+            ]
+        }
+    ],
+    "esdtAttributes": [],
+    "hasCallback": true,
+    "types": {
+        "XProjectData": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "u32"
+                },
+                {
+                    "name": "address",
+                    "type": "Address"
+                },
+                {
+                    "name": "funding_goal",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "funding_deadline",
+                    "type": "u64"
+                },
+                {
+                    "name": "funding_token_id",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "collected_funds",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}

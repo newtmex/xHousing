@@ -8,6 +8,7 @@ use lk_xht_module::{default_issue_callbacks, LkXhtAttributes};
 #[allow(unused_imports)]
 use multiversx_sc::imports::*;
 use utils::contracts_proxy::x_project_proxy;
+use x_project_storage::data::XProjectData;
 
 /// The `xProjectFunding` contract is designed to manage the crowdfunding process for real estate projects
 /// within the xHousing ecosystem. This contract facilitates the collection of funds from participants, handles
@@ -46,7 +47,7 @@ pub trait XProjectFunding:
         funding_token_id: EgldOrEsdtTokenIdentifier,
         funding_goal: BigUint,
         funding_deadline: u64,
-    ) {
+    ) -> XProjectData<Self::Api> {
         self.require_caller_is_coinbase();
 
         let xht_payment = self.call_value().single_esdt();
@@ -62,7 +63,7 @@ pub trait XProjectFunding:
             .set_lk_xht_id(self.lk_xht().get_token_id())
             .sync_call();
 
-        self.deploy_x_project(funding_token_id, funding_goal, funding_deadline);
+        self.deploy_x_project(funding_token_id, funding_goal, funding_deadline)
     }
 
     #[only_owner]
@@ -72,7 +73,7 @@ pub trait XProjectFunding:
         funding_token_id: EgldOrEsdtTokenIdentifier,
         funding_goal: BigUint,
         funding_deadline: u64,
-    ) {
+    ) -> XProjectData<Self::Api> {
         let x_project_template_addr = self.xproject_template().get();
         let x_housing_addr = self.get_x_housing_addr();
         require!(
@@ -92,7 +93,7 @@ pub trait XProjectFunding:
             funding_deadline,
             funding_token_id,
             address,
-        );
+        )
     }
 
     #[endpoint(fundProject)]

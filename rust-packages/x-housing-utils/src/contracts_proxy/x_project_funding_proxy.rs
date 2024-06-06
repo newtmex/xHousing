@@ -98,7 +98,7 @@ where
         funding_token_id: Arg2,
         funding_goal: Arg3,
         funding_deadline: Arg4,
-    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+    ) -> TxTypedCall<Env, From, To, (), Gas, XProjectData<Env::Api>> {
         self.wrapped_tx
             .raw_call("init_first_x_project")
             .argument(&xproject_template)
@@ -118,7 +118,7 @@ where
         funding_token_id: Arg0,
         funding_goal: Arg1,
         funding_deadline: Arg2,
-    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, XProjectData<Env::Api>> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("deployXProject")
@@ -200,7 +200,7 @@ where
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
         self.wrapped_tx
             .payment(NotPayable)
-            .raw_call("claim_x_project_tokens")
+            .raw_call("claimXProjectToken")
             .argument(&project_id)
             .original_result()
     }
@@ -230,4 +230,40 @@ where
             .argument(&project_id)
             .original_result()
     }
+
+    pub fn x_project_data<
+        Arg0: ProxyArg<usize>,
+    >(
+        self,
+        project_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, XProjectData<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getXProjectData")
+            .argument(&project_id)
+            .original_result()
+    }
+
+    pub fn all_x_projects(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ManagedVec<Env::Api, XProjectData<Env::Api>>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getAllXProjectData")
+            .original_result()
+    }
+}
+
+#[type_abi]
+#[derive(TopDecode, TopEncode, ManagedVecItem, NestedDecode, NestedEncode)]
+pub struct XProjectData<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub id: usize,
+    pub address: ManagedAddress<Api>,
+    pub funding_goal: BigUint<Api>,
+    pub funding_deadline: u64,
+    pub funding_token_id: EgldOrEsdtTokenIdentifier<Api>,
+    pub collected_funds: BigUint<Api>,
 }

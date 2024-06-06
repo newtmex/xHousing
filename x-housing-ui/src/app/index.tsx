@@ -1,8 +1,18 @@
 'use client';
 
-import { DappProvider } from '@/components';
-import { apiTimeout, environment, walletConnectV2ProjectId } from '@/config';
+import {
+  DappProvider,
+  NotificationModal,
+  SignTransactionsModals,
+  TransactionsToastList
+} from '@/components';
+import {
+  apiTimeout,
+  environment,
+  walletConnectV2ProjectId,
+} from '@/config';
 import type { PropsWithChildren, ReactNode } from 'react';
+import { SWRConfig } from 'swr';
 
 const AppContent = ({ children }: PropsWithChildren) => {
   return (
@@ -12,10 +22,16 @@ const AppContent = ({ children }: PropsWithChildren) => {
         name: 'customConfig',
         apiTimeout,
         walletConnectV2ProjectId
+        // TODO uncomment when working on localnet
+        // skipFetchFromServer: true,
+        // walletConnectDeepLink:
+        //   'https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://xportal.com/',
+        // walletConnectBridgeAddresses: ['https://bridge.walletconnect.org'],
+        // walletConnectV2RelayAddresses: ['wss://relay.walletconnect.com'],
+        // walletAddress,
+        // apiAddress
       }}
       dappConfig={{
-        isSSR: true,
-        shouldUseWebViewProvider: true,
         logoutRoute: 'unlock'
       }}
       customComponents={{
@@ -31,11 +47,14 @@ const AppContent = ({ children }: PropsWithChildren) => {
         }
       }}
     >
-      {children}
+      <TransactionsToastList />
+      <NotificationModal />
+      <SignTransactionsModals />
+      <SWRConfig> {children}</SWRConfig>
     </DappProvider>
   );
 };
 
 export default function App({ children }: { children: ReactNode }) {
-  return <AppContent>{children}</AppContent>;
+  return <AppContent> {children}</AppContent>;
 }

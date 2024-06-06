@@ -13,4 +13,5 @@ members = [
     "rust-packages/lk-xht-module",
     "rust-packages/coinbase-module",
     "rust-packages/x-housing-module",
+    "interact-rs",
 ]

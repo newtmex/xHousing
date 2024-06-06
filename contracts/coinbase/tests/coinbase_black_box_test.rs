@@ -364,10 +364,6 @@ impl CoinbaseTestState {
             .block_nonce(block_nonce);
     }
 
-    fn get_block_info(&self) -> &BlockInfo {
-        &self.block_state.info
-    }
-
     fn check_xht_bal(&mut self, depositor: TestAddress, balance: &BigUint<StaticApi>) {
         let xht_id = self.get_xht_id();
         self.world
@@ -514,7 +510,7 @@ fn test_claim_x_project_tokens() {
     state.fund_project(depositor1, 1, OptionalValue::None, 50_000);
 
     state.move_block_rounds(25);
-    state.set_x_project_token(1, "Ulo Gold");
+    state.set_x_project_token(1, "UloGold");
 
     // Claim
     state.claim_x_project_tokens(depositor1, 1usize);
@@ -607,15 +603,15 @@ fn test_claim_rent_reward() {
     state
         .world
         .account(depositor1)
-        .esdt_balance(FUNDING_TOKEN_ID, 50_000)
+        .esdt_balance(FUNDING_TOKEN_ID, 15_500)
         .account(depositor2)
-        .esdt_balance(FUNDING_TOKEN_ID, 15_000);
+        .esdt_balance(FUNDING_TOKEN_ID, 4_900);
 
-    state.fund_project(depositor1, 1, OptionalValue::None, 50_000);
-    state.fund_project(depositor2, 1, OptionalValue::Some(1), 15_000);
+    state.fund_project(depositor1, 1, OptionalValue::None, 15_500);
+    state.fund_project(depositor2, 1, OptionalValue::Some(1), 4_900);
 
     state.move_block_rounds(15_000);
-    let (project1_addr, project1_token_id) = state.set_x_project_token(1, "Ulo Chukwu");
+    let (project1_addr, project1_token_id) = state.set_x_project_token(1, "UloChukwu");
 
     // Claim
     state.claim_x_project_tokens(depositor2, 1usize);
@@ -644,12 +640,12 @@ fn test_claim_rent_reward() {
     state
         .world
         .check_account(depositor2)
-        .esdt_balance(&xht_id, 3_231);
+        .esdt_balance(&xht_id, 3_363);
     // Deposistor1 receives becase they are the referrer of depositor1
     state
         .world
         .check_account(depositor1)
-        .esdt_balance(&xht_id, 230);
+        .esdt_balance(&xht_id, 239);
 }
 
 #[test]
@@ -664,16 +660,16 @@ fn test_staking_and_claiming_on_xst() {
     state
         .world
         .account(depositor1)
-        .esdt_balance(FUNDING_TOKEN_ID, 50_000)
+        .esdt_balance(FUNDING_TOKEN_ID, 15_500)
         .account(depositor2)
-        .esdt_balance(FUNDING_TOKEN_ID, 15_000);
+        .esdt_balance(FUNDING_TOKEN_ID, 4_900);
 
-    state.fund_project(depositor1, 1, OptionalValue::None, 50_000);
-    state.fund_project(depositor2, 1, OptionalValue::Some(1), 15_000);
+    state.fund_project(depositor1, 1, OptionalValue::None, 15_500);
+    state.fund_project(depositor2, 1, OptionalValue::Some(1), 4_900);
 
     state.move_block_rounds(25);
 
-    let (project1_addr, project1_token_id) = state.set_x_project_token(1, "Ulo Chukwu");
+    let (project1_addr, project1_token_id) = state.set_x_project_token(1, "UloChukwu");
 
     // Claim XPT
     state.claim_x_project_tokens(depositor2, 1usize);
@@ -698,12 +694,12 @@ fn test_staking_and_claiming_on_xst() {
             EsdtTokenPayment::new(
                 lk_xht_id.clone(),
                 1,
-                XHT::from_parts(1696153, 845634944549577075),
+                XHT::from_parts(1765441, 175930489670066335),
             ),
         ],
     );
 
-    let xht_from_rent_claim = XHT::from(3151u64);
+    let xht_from_rent_claim = XHT::from(3279u64);
 
     state.check_xht_bal(depositor2, &0u64.into());
     state.claim_staking_rewards(depositor2, 1);
@@ -714,7 +710,7 @@ fn test_staking_and_claiming_on_xst() {
     state.claim_staking_rewards(depositor2, 1);
     state.check_xht_bal(
         depositor2,
-        &(xht_from_rent_claim + XHT::from_parts(646, 842510176967016442)),
+        &(xht_from_rent_claim + XHT::from_parts(646, 842510176708145118)),
     );
 
     // For completion
@@ -725,7 +721,7 @@ fn test_staking_and_claiming_on_xst() {
         OptionalValue::None,
         vec![
             EsdtTokenPayment::new(project1_token_id, 2, 0u64.into()),
-            EsdtTokenPayment::new(lk_xht_id, 2, XHT::from_parts(5653846, 152116481831923585)),
+            EsdtTokenPayment::new(lk_xht_id, 2, XHT::from_parts(5584558, 821820936711434325)),
         ],
     );
     state.move_block_rounds(50_000);

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import MobileMenu from './components/MobileMenu';
 import MainMenu from './components/MainMenu';
@@ -22,7 +24,9 @@ export default function UserLayout({
             <span>Sidebar</span>
           </div>
           <div className='content-i'>
-            <div className='content-box'>{children}</div>
+            <div className='content-box' style={{ minHeight: '95vh' }}>
+              {children}
+            </div>
 
             <Sidebar />
           </div>

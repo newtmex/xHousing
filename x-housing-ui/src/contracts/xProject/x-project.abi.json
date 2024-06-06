@@ -1,0 +1,178 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.76.0-nightly",
+            "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+            "commitDate": "2023-12-10",
+            "channel": "Nightly",
+            "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
+        },
+        "contractCrate": {
+            "name": "x-project",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.50.1"
+        }
+    },
+    "docs": [
+        "# xProject Contract Template",
+        "",
+        "The `xProject` contract template serves as the foundational blueprint for deploying",
+        "individual real estate projects within the xHousing ecosystem.",
+        "Each `xProject` contract represents a unique real estate development,",
+        "managing its ownership, revenue distribution, and participant interactions."
+    ],
+    "name": "XProject",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "x_housing_addr",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "upgradeConstructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "claimRentReward",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "XPTokenAttributes"
+                }
+            ]
+        },
+        {
+            "name": "registerXPToken",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "amount_raised",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "xht_id",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "mint_xp_token",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "deposit_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "depositor",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getXPTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getXPTokenSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getXPTokenMaxSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "receiveRent",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "getRewardPerShare",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getXhtID",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        }
+    ],
+    "esdtAttributes": [],
+    "hasCallback": true,
+    "types": {
+        "XPTokenAttributes": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "reward_per_share",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "token_weight",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Used to share referrer reward"
+                    ],
+                    "name": "original_owner",
+                    "type": "Address"
+                }
+            ]
+        }
+    }
+}

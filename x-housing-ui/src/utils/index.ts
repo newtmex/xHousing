@@ -1,4 +1,5 @@
 export * from './sdkDappUtils';
+export * from './operations';
 
 export const isAuthRoute = (path: string) => {
   return path.startsWith('/unlock');
@@ -22,5 +23,11 @@ export function truncateFromInside(string: string, length: number = 5): string {
 
   return (
     string.slice(0, eachSide) + '...' + string.slice(-(eachSide + remChar))
+  );
+}
+
+export async function sleep<R>(secs: number, cb?: () => R): Promise<R | null> {
+  return await new Promise((resolve) =>
+    setTimeout(() => resolve(cb ? cb() : null), Math.floor(secs * 1000))
   );
 }

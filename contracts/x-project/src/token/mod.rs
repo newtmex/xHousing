@@ -35,7 +35,16 @@ pub trait XPTokenModule:
 
     #[only_owner]
     #[endpoint]
-    fn mint_xp_token(&self, deposit_amount: BigUint, depositor: ManagedAddress) {
+    fn mint_xp_token(
+        &self,
+        deposit_amount: BigUint,
+        depositor: ManagedAddress,
+        amount_raised: BigUint,
+    ) {
+        // TODO remove after demo due to not beign able to move blocks in public networks
+        {
+            self.xp_amount_raised().set(amount_raised)
+        }
         let total_deposits = self.xp_amount_raised().get();
         let max_shares = self.xp_token_max_supply().get();
 

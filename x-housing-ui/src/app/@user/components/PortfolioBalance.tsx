@@ -1,3 +1,6 @@
+import { RoutePath } from '@/utils/routes';
+import Link from 'next/link';
+
 export default function PortfolioBalance() {
   return (
     <div className='col-sm-12 col-lg-8 col-xxl-6'>
@@ -62,18 +65,10 @@ export default function PortfolioBalance() {
       </div>
       <div className='element-wrapper pb-4 mb-4 border-bottom'>
         <div className='element-box-tp'>
-          <a className='btn btn-primary' href='#'>
-            <i className='os-icon os-icon-refresh-ccw'></i>
-            <span>Deposit Money</span>
-          </a>
-          <a className='btn btn-grey' href='#'>
-            <i className='os-icon os-icon-log-out'></i>
-            <span>Withdraw</span>
-          </a>
-          <a className='btn btn-grey d-none d-sm-inline-block' href='#'>
+          <Link className='btn btn-primary' href={RoutePath.Properties}>
             <i className='os-icon os-icon-plus-circle'></i>
-            <span>Add Wallet</span>
-          </a>
+            <span>Buy Property</span>
+          </Link>
         </div>
       </div>
     </div>

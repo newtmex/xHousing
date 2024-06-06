@@ -114,16 +114,19 @@ where
     pub fn mint_xp_token<
         Arg0: ProxyArg<BigUint<Env::Api>>,
         Arg1: ProxyArg<ManagedAddress<Env::Api>>,
+        Arg2: ProxyArg<BigUint<Env::Api>>,
     >(
         self,
         deposit_amount: Arg0,
         depositor: Arg1,
+        amount_raised: Arg2,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("mint_xp_token")
             .argument(&deposit_amount)
             .argument(&depositor)
+            .argument(&amount_raised)
             .original_result()
     }
 

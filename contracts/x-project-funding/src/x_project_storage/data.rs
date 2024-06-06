@@ -14,7 +14,8 @@ pub enum Status {
     Failed,
 }
 
-#[derive(TopDecode, TopEncode)]
+#[type_abi]
+#[derive(TopDecode, TopEncode, ManagedVecItem, NestedDecode, NestedEncode)]
 pub struct XProjectData<M: ManagedTypeApi> {
     pub id: usize,
     pub address: ManagedAddress<M>,
@@ -26,10 +27,10 @@ pub struct XProjectData<M: ManagedTypeApi> {
 
 impl<M: BlockchainApi> XProjectData<M> {
     pub fn status(&self) -> Status {
-        if M::blockchain_api_impl().get_block_timestamp() < self.funding_deadline {
-            Status::FundingPeriod
-        } else if self.collected_funds >= self.funding_goal {
+        if self.collected_funds >= self.funding_goal {
             Status::Successful
+        } else if M::blockchain_api_impl().get_block_timestamp() < self.funding_deadline {
+            Status::FundingPeriod
         } else {
             Status::Failed
         }
@@ -47,7 +48,7 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
         funding_deadline: u64,
         funding_token_id: EgldOrEsdtTokenIdentifier<SA>,
         address: ManagedAddress<SA>,
-    ) {
+    ) -> XProjectData<SA> {
         self.require(funding_goal > 0, b"Funding goal must be more than 0");
         self.require(
             funding_deadline > self.get_current_time(),
@@ -72,7 +73,9 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
         self.require(data_store.is_empty(), b"invalid computed project id");
 
         self.id_n_address().insert(data.id, data.address.clone());
-        data_store.set(data);
+        data_store.set(&data);
+
+        data
     }
 
     pub(crate) fn fund(
@@ -145,6 +148,19 @@ impl<SA: StorageMapperApi + BlockchainApi> XProjectStorage<SA> {
 
     pub(crate) fn get_project(&self, project_id: usize) -> XProjectData<SA> {
         self.get_project_store(project_id).get()
+    }
+
+    pub(crate) fn get_projects(&self) -> ManagedVec<SA, XProjectData<SA>> {
+        let mut projects = ManagedVec::new();
+        let total_projects = self.total().get();
+
+        if total_projects >= 1 {
+            for project_id in 1..=total_projects {
+                projects.push(self.get_project(project_id))
+            }
+        }
+
+        projects
     }
 
     fn get_project_store(&self, project_id: usize) -> SingleValueMapper<SA, XProjectData<SA>> {

@@ -7,14 +7,17 @@
     "build": "yarn build-devnet",
     "lint": "next lint",
     "start-devnet": "yarn run copy-devnet-config & yarn dev",
+    "start-localnet": "yarn run copy-localnet-config & yarn dev",
     "start-testnet": "yarn run copy-testnet-config & yarn dev",
     "start-mainnet": "yarn run copy-mainnet-config & yarn dev",
     "copy-devnet-config": "cp ./src/config/config.devnet.ts ./src/config/index.ts",
     "copy-testnet-config": "cp ./src/config/config.testnet.ts ./src/config/index.ts",
     "copy-mainnet-config": "cp ./src/config/config.mainnet.ts ./src/config/index.ts",
+    "copy-localnet-config": "cp ./src/config/config.localnet.ts ./src/config/index.ts",
     "build-mainnet": "yarn run copy-mainnet-config & next build",
     "build-testnet": "yarn run copy-testnet-config & next build",
     "build-devnet": "yarn run copy-devnet-config & next build",
+    "build-localnet": "yarn run copy-localnet-config & next build",
     "preview": "next start",
     "test": "jest"
   },
@@ -26,6 +29,7 @@
     "@multiversx/sdk-dapp": "2.31.3",
     "@multiversx/sdk-network-providers": "2.3.0",
     "axios": "1.6.5",
+    "bignumber.js": "^9.1.2",
     "blockies-identicon": "^0.1.0",
     "bootstrap": "4.4.1",
     "classnames": "2.3.2",
@@ -38,6 +42,7 @@
     "popper.js": "^1.16.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "swr": "^2.2.5",
     "typescript": "5.2.2"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { ROUTES } from '@/utils/routes';
 import UserAvatar from './UserAvatar';
 import UserInfo from './UserInfo';
+import Link from 'next/link';
 
 export default function MobileMenu() {
   return (
@@ -28,12 +29,12 @@ export default function MobileMenu() {
         <ul className='main-menu'>
           {ROUTES.map((route, index) => (
             <li key={`${route.path}+${index}`}>
-              <a href={route.path}>
+              <Link href={route.path}>
                 <div className='icon-w'>
                   <div className={`os-icon os-icon-${route.osIcon}`}></div>
                 </div>
                 <span>{route.name}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
