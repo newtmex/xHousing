@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { ContractWithAbi } from '..';
 import abi from './x-project.abi.json';
-import { AbiRegistry } from '@multiversx/sdk-core/out';
+import { AbiRegistry, TokenTransfer } from '@multiversx/sdk-core/out';
 
 const xProjectRegistry = AbiRegistry.create(abi);
 
@@ -33,5 +33,16 @@ export class XProjectSC extends ContractWithAbi {
     ]);
 
     return { tokenId, maxSupply };
+  }
+
+  makeReceiveRentTx({ payment }: { payment: TokenTransfer }) {
+    return this.buildGenericTXEndPoint({
+      endpoint: 'receiveRent',
+      customiser(interaction) {
+        return interaction
+          .withGasLimit(50_000_000)
+          .withSingleESDTTransfer(payment);
+      }
+    });
   }
 }

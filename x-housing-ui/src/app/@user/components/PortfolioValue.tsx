@@ -1,13 +1,14 @@
 'use client';
 
 import { useXhtID } from '@/contracts/coinbase/hooks';
-import { useAccountTokens } from '@/hooks';
-import { prettyFormatAmount } from '@/utils';
+import { xProjectFundingSC } from '@/contracts/xProjectFunding';
+import { useAccountTokens, useGetAccount } from '@/hooks';
+import { getWindowLocation, prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
+import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
-
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const usePortfolioViewToggler = () => {
   const [opened, setOpened] = useState(false);
@@ -35,6 +36,28 @@ export default function PortfolioValue() {
   const { xht, lkXht, xProjectsToken } = useAccountTokens();
   const xhtID = useXhtID();
   const pathname = usePathname();
+
+  const { address } = useGetAccount();
+
+  const onUnlockLockedXHT = useCallback(async () => {
+    if (!lkXht) {
+      return;
+    }
+
+    let unlockLkXHTtx = xProjectFundingSC.makeUnlockXhtTx({
+      token: lkXht,
+      address
+    });
+    unlockLkXHTtx.sender = address;
+
+    console.log('sending', unlockLkXHTtx.getData().toString());
+
+    await signAndSendTransactions({
+      transactions: [unlockLkXHTtx],
+      callbackRoute: getWindowLocation().pathname,
+      transactionsDisplayInfo: {}
+    });
+  }, [lkXht, address]);
 
   return (
     <div className={`fancy-selector-w ${opened ? 'opened' : ''}`}>
@@ -76,6 +99,13 @@ export default function PortfolioValue() {
                 </strong>
               </div>
             </div>
+            <button
+              onClick={() => onUnlockLockedXHT()}
+              className='btn btn-primary'
+              style={{ fontSize: '0.75em' }}
+            >
+              Unlock
+            </button>
           </div>
         )}
 

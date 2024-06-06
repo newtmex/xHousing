@@ -7,8 +7,10 @@ import {
   AbiRegistry,
   BinaryCodec,
   List,
+  TokenTransfer,
   TypedValue
 } from '@multiversx/sdk-core/out';
+import { NonFungibleTokenOfAccountOnNetwork } from '@multiversx/sdk-network-providers/out';
 
 const xProjectRegistry = AbiRegistry.create(abi);
 
@@ -96,6 +98,31 @@ class XProjectFundingSC extends ContractWithAbi {
       args: [projectID, referrerID],
       customiser(interaction) {
         return interaction.withValue(amount).withGasLimit(50_000_000);
+      }
+    });
+  }
+  
+  makeUnlockXhtTx({
+    token,
+    address
+  }: {
+    token: NonFungibleTokenOfAccountOnNetwork;
+    address: string;
+  }) {
+    return this.buildGenericTXEndPoint({
+      endpoint: 'unlockXht',
+      customiser(interaction) {
+        return interaction
+          .withSender({ bech32: () => address })
+          .withSingleESDTNFTTransfer(
+            TokenTransfer.metaEsdtFromAmount(
+              token.collection,
+              token.nonce,
+              token.balance,
+              0
+            )
+          )
+          .withGasLimit(50_000_000);
       }
     });
   }

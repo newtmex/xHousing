@@ -7,10 +7,10 @@ export const chainID = 'T';
 export const environment = EnvironmentsEnum.testnet;
 
 export const coinbaseAddress =
-  'erd1qqqqqqqqqqqqqpgqdzsrrzf2mueyjs5ugq2mqr0gs2fgnxzj0fusrvzxkw';
+  'erd1qqqqqqqqqqqqqpgqx562aw8gmwuc6teas05kes8vv2zdhqwy0fusctp7xw';
 export const xHousingAddress =
-  'erd1qqqqqqqqqqqqqpgqutsyyrxp4vxjaya9jh79y8mh8enutrcq0fusf6fltz';
+  'erd1qqqqqqqqqqqqqpgq8xpjv9fvcghtpmvmwx4v8j07rpu0eeep0fusz9w34v';
 export const xProjectFundingAddress =
-  'erd1qqqqqqqqqqqqqpgqyuw45gja7rvrvfg8p798lne0xsau5g7a0fusl8phfz';
+  'erd1qqqqqqqqqqqqqpgqc8zzdp6ypp0ejg9ajpc595t8n4qn0etp0fusg6wy73';
 export const apiAddress = 'https://testnet-api.multiversx.com';
 export const proxyAddress = 'https://testnet-gateway.multiversx.com';

@@ -1,12 +1,15 @@
 'use client';
 
+import { useXhtID } from '@/contracts/coinbase/hooks';
 import { XProjectsValue, useXProjects } from '@/contracts/xProject/hooks';
 import { xProjectFundingSC } from '@/contracts/xProjectFunding';
-import { getWindowLocation, prettyFormatAmount, sleep } from '@/utils';
+import { useAccountTokens } from '@/hooks';
+import { getWindowLocation, prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
 import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
-import { Transaction } from '@multiversx/sdk-core/out';
+import { TokenTransfer, Transaction } from '@multiversx/sdk-core/out';
 import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
+import BigNumber from 'bignumber.js';
 import Link from 'next/link';
 import { useCallback } from 'react';
 
@@ -16,6 +19,38 @@ export default function Properties() {
   const properties = useXProjects();
 
   const { address: loggedInUserAdsress } = useGetAccount();
+  const { xProjectsToken: _xProjectsToken, xht } = useAccountTokens();
+
+  const xProjectsToken = _xProjectsToken?.map((token) => token.collection);
+
+  const xhtId = useXhtID();
+
+  const onRentProperty = useCallback(
+    async ({ contract }: Pick<XProjectsValue['projectData'], 'contract'>) => {
+      if (!xhtId || !xht) {
+        return;
+      }
+
+      let tx = contract.makeReceiveRentTx({
+        payment: TokenTransfer.fungibleFromAmount(
+          xhtId,
+          new BigNumber(xht.balance.dividedBy(3)),
+          0
+        )
+      });
+
+      tx.sender = loggedInUserAdsress;
+
+      let transactions: Transaction[] = [tx];
+
+      await signAndSendTransactions({
+        transactions,
+        callbackRoute: getWindowLocation().pathname,
+        transactionsDisplayInfo: {}
+      });
+    },
+    [xhtId, loggedInUserAdsress, xht]
+  );
 
   const onBuyPropertyUnits = useCallback(
     async ({ data }: Pick<XProjectsValue['projectData'], 'data'>) => {
@@ -24,7 +59,7 @@ export default function Properties() {
       if (!data.isTokensClaimable) {
         const fundProjectTx = xProjectFundingSC.makeFundProjectTx({
           projectID: data.id,
-          amount: data.funding_goal.dividedBy(3),
+          amount: new BigNumber(data.funding_goal.dividedBy(3).toFixed(0)),
           referrerID
         });
         fundProjectTx.sender = loggedInUserAdsress;
@@ -96,7 +131,12 @@ export default function Properties() {
                               <span>/per year</span>
                             </div>
                             <div className='item-buttons col-4'>
-                              <button className='btn btn-primary'>Rent</button>
+                              <button
+                                onClick={() => onRentProperty({ contract })}
+                                className='btn btn-primary'
+                              >
+                                Rent
+                              </button>
                             </div>
                           </div>
                           <div className='col-12 row'>
@@ -113,22 +153,27 @@ export default function Properties() {
                                 <span>/per unit</span>
                               </div>
                             )}
-                            <div className='item-buttons col-4'>
-                              <button
-                                className={`btn btn-${
-                                  data.isTokensClaimable ? 'success' : 'warning'
-                                }`}
-                                onClick={() =>
-                                  onBuyPropertyUnits({
-                                    data
-                                  })
-                                }
-                              >
-                                {!data.isTokensClaimable
-                                  ? 'Buy'
-                                  : 'Claim Tokens'}
-                              </button>
-                            </div>
+
+                            {!xProjectsToken?.includes(tokenId) && (
+                              <div className='item-buttons col-4'>
+                                <button
+                                  className={`btn btn-${
+                                    data.isTokensClaimable
+                                      ? 'success'
+                                      : 'warning'
+                                  }`}
+                                  onClick={() =>
+                                    onBuyPropertyUnits({
+                                      data
+                                    })
+                                  }
+                                >
+                                  {!data.isTokensClaimable
+                                    ? 'Buy'
+                                    : 'Claim Tokens'}
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

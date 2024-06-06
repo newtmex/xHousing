@@ -115,26 +115,30 @@ pub trait XProjectFunding:
     #[payable("*")]
     #[endpoint(unlockXht)]
     fn unlock_xht(&self) {
-        let mut payments = self.call_value().all_esdt_transfers().clone_value();
+        let sent_payments = self.call_value().all_esdt_transfers().clone_value();
 
         let lk_xht_mapper = self.lk_xht();
-        lk_xht_mapper.require_all_same_token(&payments);
+        lk_xht_mapper.require_all_same_token(&sent_payments);
 
         let mut xht_amount = BigUint::zero();
+        let mut return_payments = ManagedVec::new();
 
-        for token in &payments {
+        for token in &sent_payments {
             let (unlocked, new_attr) = lk_xht_mapper
                 .get_token_attributes::<LkXhtAttributes<Self::Api>>(token.token_nonce)
                 .unlock_matured();
 
             xht_amount += unlocked;
-            lk_xht_mapper.nft_update_attributes(token.token_nonce, &new_attr);
+            return_payments.push(lk_xht_mapper.nft_create(new_attr.xht_amount.clone(), &new_attr));
         }
 
-        // Add XHT to payments, then send payments back to user
+        // Add XHT to return_payments, then send return_payments back to user
         if xht_amount > 0 {
-            payments.push(self.make_xht_payment(xht_amount));
+            return_payments.push(self.make_xht_payment(xht_amount));
         }
-        self.tx().to(ToCaller).multi_esdt(payments).transfer();
+        self.tx()
+            .to(ToCaller)
+            .multi_esdt(return_payments)
+            .transfer();
     }
 }

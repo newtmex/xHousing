@@ -164,7 +164,7 @@ impl CoinbaseTestState {
         self.world.set_esdt_local_roles(
             X_PROJECT_FUNDING_ADDR,
             lk_xht_id.to_boxed_bytes().as_slice(),
-            &[EsdtLocalRole::NftUpdateAttributes, EsdtLocalRole::NftCreate],
+            &[EsdtLocalRole::NftBurn, EsdtLocalRole::NftCreate],
         );
 
         self.world
@@ -329,7 +329,7 @@ impl CoinbaseTestState {
         self.world.set_esdt_local_roles(
             &project_addr,
             project_token_id.to_boxed_bytes().as_slice(),
-            &[EsdtLocalRole::NftUpdateAttributes, EsdtLocalRole::NftCreate],
+            &[EsdtLocalRole::NftBurn, EsdtLocalRole::NftCreate],
         );
 
         (project_addr, project_token_id)

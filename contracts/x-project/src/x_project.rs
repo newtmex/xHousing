@@ -41,7 +41,7 @@ pub trait XProject:
         let caller = self.blockchain().get_caller();
         let current_rps = self.reward_per_share().get();
 
-        let xpt_payment = self.call_value().single_esdt();
+        let mut xpt_payment = self.call_value().single_esdt();
         self.xp_token()
             .require_same_token(&xpt_payment.token_identifier);
 
@@ -84,8 +84,8 @@ pub trait XProject:
             }
 
             xpt_attr.reward_per_share = current_rps;
-            self.xp_token()
-                .nft_update_attributes(xpt_payment.token_nonce, &xpt_attr);
+            // Since this is an SFT, we create a new one
+            xpt_payment = self.xp_token().nft_create(xpt_payment.amount, &xpt_attr);
 
             self.send_xht(&caller, user_value);
             // Return updated token
