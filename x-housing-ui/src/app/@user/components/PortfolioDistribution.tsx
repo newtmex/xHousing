@@ -1,4 +1,8 @@
 export default function PortfolioDistribution() {
+  if (true == !!1) {
+    return null;
+  }
+  
   return (
     <div className='col-sm-2 d-none d-xxl-block'>
       <div className='element-box less-padding'>

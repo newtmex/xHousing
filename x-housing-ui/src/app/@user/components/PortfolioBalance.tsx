@@ -1,19 +1,59 @@
+import { useAccountTokens, useTokenPrices } from '@/hooks';
+import { prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
+import BigNumber from 'bignumber.js';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 export default function PortfolioBalance() {
+  const prices = useTokenPrices();
+  const { xht, lkXht, otherTokens } = useAccountTokens();
+
+  const portfolioValue = useMemo(() => {
+    let value = new BigNumber(0);
+    const addValue = <
+      Bal extends { multipliedBy: any },
+      N extends { balance: Bal; collection?: string; identifier?: string }
+    >(
+      n: N[] | N | null
+    ) => {
+      
+      if (n) {
+        if (n instanceof Array) {
+          n.forEach((token) => {
+            let price = prices[token.collection || token.identifier!];
+
+            value = value.plus(
+              token.balance
+                .multipliedBy(new BigNumber(price.toFixed(2)))
+                .dividedBy(1e2)
+            );
+          });
+        } else {
+          let price = prices[n.collection || n.identifier!];
+
+          value = value.plus(
+            n.balance.multipliedBy(new BigNumber(price.toFixed(2))).dividedBy(1e20)
+          );
+        }
+      }
+    };
+
+    addValue(xht);
+    addValue(lkXht);
+    addValue(otherTokens);
+
+    return prettyFormatAmount({ value: value.toFixed(0), decimals: 2 });
+  }, [xht, lkXht, otherTokens, prices]);
+
   return (
     <div className='col-sm-12 col-lg-8 col-xxl-6'>
       <div className='element-balances justify-content-between mobile-full-width'>
         <div className='balance balance-v2'>
           <div className='balance-title'>Your Portfolio Balance</div>
           <div className='balance-value'>
-            <span className='d-xxl-none'>$72,245</span>
-            <span className='d-none d-xxl-inline-block'>$171,473</span>
-            <span className='trending trending-down-basic'>
-              <span>%12</span>
-              <i className='os-icon os-icon-arrow-2-down'></i>
-            </span>
+            <span className='d-xxl-none'>${portfolioValue}</span>
+            <span className='d-none d-xxl-inline-block'>${portfolioValue}</span>
           </div>
         </div>
         <div className='balance-table pl-sm-2'>

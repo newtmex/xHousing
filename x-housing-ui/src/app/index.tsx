@@ -6,6 +6,7 @@ import {
   SignTransactionsModals,
   TransactionsToastList
 } from '@/components';
+import BootstrapClient from '@/components/BootstrapClient';
 import {
   apiTimeout,
   environment,
@@ -51,6 +52,7 @@ const AppContent = ({ children }: PropsWithChildren) => {
       <NotificationModal />
       <SignTransactionsModals />
       <SWRConfig> {children}</SWRConfig>
+      <BootstrapClient />
     </DappProvider>
   );
 };

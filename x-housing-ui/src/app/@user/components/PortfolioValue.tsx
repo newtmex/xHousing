@@ -1,69 +1,43 @@
+'use client';
+
 import { useXhtID } from '@/contracts/coinbase/hooks';
-import { useXProjects } from '@/contracts/xProject/hooks';
-import { useLkXhtID } from '@/contracts/xProjectFunding/hooks';
-import { apiProvider } from '@/providers/apiProvider';
+import { useAccountTokens } from '@/hooks';
 import { prettyFormatAmount } from '@/utils';
-import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
-import {
-  FungibleTokenOfAccountOnNetwork,
-  NonFungibleTokenOfAccountOnNetwork
-} from '@multiversx/sdk-network-providers/out';
-import { useMemo } from 'react';
-import useSWR from 'swr';
+import { RoutePath } from '@/utils/routes';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-const useAccountTokens = () => {
-  const xProjectsTokenId = useXProjects().map((v) => v.projectData.tokenId);
-  const xhtID = useXhtID();
-  const lkXhtID = useLkXhtID();
 
-  const { address } = useGetAccount();
+const usePortfolioViewToggler = () => {
+  const [opened, setOpened] = useState(false);
 
-  return useSWR(
-    xhtID && lkXhtID ? { xProjectsTokenId, address, xhtID, lkXhtID } : null,
-    async ({ address, xProjectsTokenId, xhtID, lkXhtID }) => {
-      const [xht, nfts] = await Promise.allSettled([
-        apiProvider.getFungibleTokenOfAccount({ bech32: () => address }, xhtID),
-
-        apiProvider.getNonFungibleTokensOfAccount({ bech32: () => address })
-      ]);
-
-      const userXht = xht.status == 'fulfilled' ? xht.value : null;
-      let userLkXht: NonFungibleTokenOfAccountOnNetwork | null = null;
-      const otherTokens =
-        nfts.status == 'rejected'
-          ? null
-          : nfts.value.filter((token) => {
-              if (lkXhtID == token.collection) {
-                userLkXht = token;
-                return false;
-              }
-
-              return xProjectsTokenId.includes(token.collection);
-            });
-
-      return [userXht, userLkXht, otherTokens] as [
-        FungibleTokenOfAccountOnNetwork | null,
-        NonFungibleTokenOfAccountOnNetwork | null,
-        NonFungibleTokenOfAccountOnNetwork[] | null
-      ];
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== pathnameRef.current) {
+      setOpened(false);
+      pathnameRef.current = pathname;
     }
-  ).data;
+  }, [pathname]);
+
+  return {
+    opened,
+    viewToggler: () => {
+      // Toggle opened state
+      setOpened(!opened);
+    }
+  };
 };
 
 export default function PortfolioValue() {
-  const accountTokens = useAccountTokens();
+  const { opened, viewToggler } = usePortfolioViewToggler();
+  const { xht, lkXht, otherTokens } = useAccountTokens();
   const xhtID = useXhtID();
-
-  if (!accountTokens) {
-    return null;
-  }
-
-  const [xht, lkXht, otherTokens] = accountTokens;
-
-  console.log({ xht, lkXht, otherTokens });
+  const pathname = usePathname();
 
   return (
-    <div className='fancy-selector-w'>
+    <div className={`fancy-selector-w ${opened ? 'opened' : ''}`}>
       <div className='fancy-selector-current'>
         <div className='fs-img'>
           <img alt='' src='img/card4.png' />
@@ -80,62 +54,63 @@ export default function PortfolioValue() {
             </strong>
           </div>
         </div>
-        <div className='fs-selector-trigger'>
+        <div onClick={viewToggler} className='fs-selector-trigger'>
           <i className='os-icon os-icon-arrow-down4'></i>
         </div>
       </div>
       <div className='fancy-selector-options'>
-        <div className='fancy-selector-option'>
-          <div className='fs-img'>
-            <img alt='' src='img/card2.png' />
-          </div>
-          <div className='fs-main-info'>
-            <div className='fs-name'>
-              <span>Lite Portfolio</span>
-              <strong>ETH</strong>
+        {lkXht && (
+          <div className='fancy-selector-option'>
+            <div className='fs-img'>
+              <img alt='' src='img/card2.png' />
             </div>
-            <div className='fs-sub'>
-              <span>Balance:</span>
-              <strong>$5,304</strong>
-            </div>
-          </div>
-        </div>
-        <div className='fancy-selector-option active'>
-          <div className='fs-img'>
-            <img alt='' src='img/card4.png' />
-          </div>
-          <div className='fs-main-info'>
-            <div className='fs-name'>
-              <span>Bitcoin Portfolio</span>
-              <strong>BTC</strong>
-            </div>
-            <div className='fs-sub'>
-              <span>Balance:</span>
-              <strong>$8,274</strong>
+            <div className='fs-main-info'>
+              <div className='fs-name'>
+                <span>{lkXht.name} Portfolio</span>
+                <strong>{lkXht.collection}</strong>
+              </div>
+              <div className='fs-sub'>
+                <span>Balance:</span>
+                <strong>
+                  {prettyFormatAmount({ value: lkXht.balance.toFixed(0) })}
+                </strong>
+              </div>
             </div>
           </div>
-        </div>
-        <div className='fancy-selector-option'>
-          <div className='fs-img'>
-            <img alt='' src='img/card3.png' />
-          </div>
-          <div className='fs-main-info'>
-            <div className='fs-name'>
-              <span>Ripple Portfolio</span>
-              <strong>RPX</strong>
+        )}
+
+        {otherTokens && <>Properties</>}
+        {otherTokens?.map((token) => (
+          <div className='fancy-selector-option'>
+            <div className='fs-img'>
+              <img alt='' src='img/card2.png' />
             </div>
-            <div className='fs-sub'>
-              <span>Balance:</span>
-              <strong>$1,202</strong>
+            <div className='fs-main-info'>
+              <div className='fs-name'>
+                <span>{token.name} Portfolio</span>
+                <strong>{token.collection}</strong>
+              </div>
+              <div className='fs-sub'>
+                <span>Units:</span>
+                <strong>
+                  {prettyFormatAmount({
+                    value: token.balance.toFixed(0),
+                    decimals: 0
+                  })}
+                </strong>
+              </div>
             </div>
           </div>
-        </div>
-        <div className='fancy-selector-actions text-right'>
-          <a className='btn btn-primary' href='#'>
-            <i className='os-icon os-icon-ui-22'></i>
-            <span>Add Account</span>
-          </a>
-        </div>
+        ))}
+
+        {!pathname.includes(RoutePath.Properties) && (
+          <div className='fancy-selector-actions text-right'>
+            <Link className='btn btn-primary' href={RoutePath.Properties}>
+              <i className='os-icon os-icon-ui-22'></i>
+              <span>Add Property</span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
