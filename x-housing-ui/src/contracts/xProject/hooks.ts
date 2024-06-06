@@ -5,6 +5,7 @@ import { XProjectSC } from '@/contracts/xProject';
 import { XProjectData, xProjectFundingSC } from '@/contracts/xProjectFunding';
 import { apiProvider } from '@/providers/apiProvider';
 import BigNumber from 'bignumber.js';
+import { DefinitionOfTokenCollectionOnNetwork } from '@multiversx/sdk-network-providers/out';
 
 export interface XProjectsValue {
   image: string;
@@ -13,6 +14,7 @@ export interface XProjectsValue {
     maxSupply: BigNumber;
     tokenId: string;
     contract: XProjectSC;
+    tokenInfo: DefinitionOfTokenCollectionOnNetwork;
   };
   features: string[];
   description: string;
@@ -29,11 +31,15 @@ export const useXProjects = (): XProjectsValue[] => {
           const contract = new XProjectSC(data.address, chainID, apiProvider);
 
           const { maxSupply, tokenId } = await contract.getInfo();
+          const tokenInfo =
+            await apiProvider.getDefinitionOfTokenCollection(tokenId);
+
           return {
             data,
             maxSupply,
             tokenId,
-            contract
+            contract,
+            tokenInfo
           };
         })
       )

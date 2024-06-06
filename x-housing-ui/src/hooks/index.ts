@@ -31,7 +31,7 @@ export const useAccountTokens = () => {
 
       const userXht = xht.status == 'fulfilled' ? xht.value : null;
       let userLkXht: NonFungibleTokenOfAccountOnNetwork | null = null;
-      const otherTokens =
+      const xProjectsToken =
         nfts.status == 'rejected'
           ? null
           : nfts.value.filter((token) => {
@@ -43,7 +43,7 @@ export const useAccountTokens = () => {
               return xProjectsTokenId.includes(token.collection);
             });
 
-      return [userXht, userLkXht, otherTokens] as [
+      return [userXht, userLkXht, xProjectsToken] as [
         FungibleTokenOfAccountOnNetwork | null,
         NonFungibleTokenOfAccountOnNetwork | null,
         NonFungibleTokenOfAccountOnNetwork[] | null
@@ -55,13 +55,13 @@ export const useAccountTokens = () => {
     return {
       xht: null,
       lkXht: null,
-      otherTokens: null
+      xProjectsToken: null
     };
   }
 
-  const [xht, lkXht, otherTokens] = data;
+  const [xht, lkXht, xProjectsToken] = data;
 
-  return { xht, lkXht, otherTokens };
+  return { xht, lkXht, xProjectsToken };
 };
 
 // TODO get real values

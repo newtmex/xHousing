@@ -32,7 +32,7 @@ const usePortfolioViewToggler = () => {
 
 export default function PortfolioValue() {
   const { opened, viewToggler } = usePortfolioViewToggler();
-  const { xht, lkXht, otherTokens } = useAccountTokens();
+  const { xht, lkXht, xProjectsToken } = useAccountTokens();
   const xhtID = useXhtID();
   const pathname = usePathname();
 
@@ -79,8 +79,8 @@ export default function PortfolioValue() {
           </div>
         )}
 
-        {otherTokens && <>Properties</>}
-        {otherTokens?.map((token) => (
+        {xProjectsToken && <>Properties</>}
+        {xProjectsToken?.map((token) => (
           <div className='fancy-selector-option'>
             <div className='fs-img'>
               <img alt='' src='img/card2.png' />

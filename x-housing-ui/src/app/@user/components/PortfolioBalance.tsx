@@ -1,3 +1,4 @@
+import { useXProjects } from '@/contracts/xProject/hooks';
 import { useAccountTokens, useTokenPrices } from '@/hooks';
 import { prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
@@ -7,7 +8,11 @@ import { useMemo } from 'react';
 
 export default function PortfolioBalance() {
   const prices = useTokenPrices();
-  const { xht, lkXht, otherTokens } = useAccountTokens();
+  const { xht, lkXht, xProjectsToken } = useAccountTokens();
+  const xProjectsTokenDetail = useXProjects().map((v) => ({
+    collection: v.projectData.tokenId,
+    name: v.projectData.tokenInfo.name
+  }));
 
   const portfolioValue = useMemo(() => {
     let value = new BigNumber(0);
@@ -17,7 +22,6 @@ export default function PortfolioBalance() {
     >(
       n: N[] | N | null
     ) => {
-      
       if (n) {
         if (n instanceof Array) {
           n.forEach((token) => {
@@ -33,7 +37,9 @@ export default function PortfolioBalance() {
           let price = prices[n.collection || n.identifier!];
 
           value = value.plus(
-            n.balance.multipliedBy(new BigNumber(price.toFixed(2))).dividedBy(1e20)
+            n.balance
+              .multipliedBy(new BigNumber(price.toFixed(2)))
+              .dividedBy(1e20)
           );
         }
       }
@@ -41,10 +47,10 @@ export default function PortfolioBalance() {
 
     addValue(xht);
     addValue(lkXht);
-    addValue(otherTokens);
+    addValue(xProjectsToken);
 
     return prettyFormatAmount({ value: value.toFixed(0), decimals: 2 });
-  }, [xht, lkXht, otherTokens, prices]);
+  }, [xht, lkXht, xProjectsToken, prices]);
 
   return (
     <div className='col-sm-12 col-lg-8 col-xxl-6'>
@@ -60,44 +66,15 @@ export default function PortfolioBalance() {
           <table className='table table-lightborder table-bordered table-v-compact mb-0'>
             <tbody>
               <tr>
-                <td>
-                  <strong>2.34</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Bitcoins BTC
-                  </div>
-                </td>
-                <td>
-                  <strong>1.74</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Ripple RPX
-                  </div>
-                </td>
-                <td className='d-sm-none d-xxxxl-table-cell d-md-table-cell d-xxl-none'>
-                  <strong>4.82</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Newcoin NCN
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>1.22</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Litecoin LTC
-                  </div>
-                </td>
-                <td>
-                  <strong>1.87</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Etherium ETH
-                  </div>
-                </td>
-                <td className='d-sm-none d-xxxxl-table-cell d-md-table-cell d-xxl-none'>
-                  <strong>1.02</strong>
-                  <div className='balance-label smaller lighter text-nowrap'>
-                    Dogecoin DGC
-                  </div>
-                </td>
+                {' '}
+                {xProjectsTokenDetail.map((token) => (
+                  <td>
+                    <strong>${prices[token.collection].toFixed(2)}</strong>
+                    <div className='balance-label smaller lighter text-nowrap'>
+                      {token.name} {token.collection}
+                    </div>
+                  </td>
+                ))}
               </tr>
             </tbody>
           </table>
