@@ -2,9 +2,10 @@
 
 import { XProjectsValue, useXProjects } from '@/contracts/xProject/hooks';
 import { xProjectFundingSC } from '@/contracts/xProjectFunding';
-import { prettyFormatAmount, sleep } from '@/utils';
+import { getWindowLocation, prettyFormatAmount, sleep } from '@/utils';
 import { RoutePath } from '@/utils/routes';
 import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
+import { Transaction } from '@multiversx/sdk-core/out';
 import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
 import Link from 'next/link';
 import { useCallback } from 'react';
@@ -18,21 +19,31 @@ export default function Properties() {
 
   const onBuyPropertyUnits = useCallback(
     async ({ data }: Pick<XProjectsValue['projectData'], 'data'>) => {
-      const fundProjectTx = xProjectFundingSC.makeFundProjectTx({
-        projectID: data.id,
-        amount: data.funding_goal,
-        referrerID
-      });
+      let transactions: Transaction[] = [];
 
-      const claimXProjectTokenTx = xProjectFundingSC.makeClaimXProjectTokenTx({
-        projectID: data.id
-      });
+      if (!data.isTokensClaimable) {
+        const fundProjectTx = xProjectFundingSC.makeFundProjectTx({
+          projectID: data.id,
+          amount: data.funding_goal.dividedBy(3),
+          referrerID
+        });
+        fundProjectTx.sender = loggedInUserAdsress;
+        transactions.push(fundProjectTx);
+      }
+      if (data.isTokensClaimable) {
+        const claimXProjectTokenTx = xProjectFundingSC.makeClaimXProjectTokenTx(
+          {
+            projectID: data.id
+          }
+        );
 
-      claimXProjectTokenTx.sender = fundProjectTx.sender = loggedInUserAdsress;
+        claimXProjectTokenTx.sender = loggedInUserAdsress;
+        transactions.push(claimXProjectTokenTx);
+      }
 
       await signAndSendTransactions({
-        transactions: [fundProjectTx, claimXProjectTokenTx],
-        callbackRoute: '',
+        transactions,
+        callbackRoute: getWindowLocation().pathname,
         transactionsDisplayInfo: {}
       });
     },
@@ -89,27 +100,33 @@ export default function Properties() {
                             </div>
                           </div>
                           <div className='col-12 row'>
-                            <div className='item-price col-8'>
-                              <strong>
-                                <small>{data.funding_token_id}</small>{' '}
-                                {prettyFormatAmount({
-                                  value: unitPrice.toFixed(0),
-                                  length: 50,
-                                  showIsLessThanDecimalsLabel: false
-                                })}
-                              </strong>
-                              <span>/per unit</span>
-                            </div>{' '}
+                            {!data.isTokensClaimable && (
+                              <div className='item-price col-8'>
+                                <strong>
+                                  <small>{data.funding_token_id}</small>{' '}
+                                  {prettyFormatAmount({
+                                    value: unitPrice.toFixed(0),
+                                    length: 50,
+                                    showIsLessThanDecimalsLabel: false
+                                  })}
+                                </strong>
+                                <span>/per unit</span>
+                              </div>
+                            )}
                             <div className='item-buttons col-4'>
                               <button
-                                className='btn btn-success'
+                                className={`btn btn-${
+                                  data.isTokensClaimable ? 'success' : 'warning'
+                                }`}
                                 onClick={() =>
                                   onBuyPropertyUnits({
                                     data
                                   })
                                 }
                               >
-                                Buy
+                                {!data.isTokensClaimable
+                                  ? 'Buy'
+                                  : 'Claim Tokens'}
                               </button>
                             </div>
                           </div>

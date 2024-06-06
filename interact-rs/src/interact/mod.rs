@@ -239,6 +239,45 @@ impl Interact {
             .await;
     }
 
+    pub async fn deploy_x_project(&mut self, project_id: usize, name: &str, funding_goal: u64) {
+        let x_project_funding_addr = self.get_x_project_funding_addr();
+        let contracts_owner = &self.contracts_owner;
+        let current_timestamp = self
+            .get_latest_hyper_block_status(true)
+            .await
+            .unwrap()
+            .status
+            .current_timestamp;
+
+        self.interactor
+            .tx()
+            .to(&x_project_funding_addr)
+            .from(contracts_owner)
+            .gas(500_000_000)
+            .typed(XProjectFundingProxy)
+            .deploy_x_project(
+                "EGLD",
+                funding_goal * 10u64.pow(12),
+                current_timestamp + 100_000,
+            )
+            .prepare_async()
+            .run()
+            .await;
+
+        self.interactor
+            .tx()
+            .to(&x_project_funding_addr)
+            .from(contracts_owner)
+            .gas(500_000_000)
+            .typed(XProjectFundingProxy)
+            .set_x_project_token(project_id, name)
+            .egld(ESDT_REG_COST)
+            .returns(ExpectStatus(0))
+            .prepare_async()
+            .run()
+            .await;
+    }
+
     fn get_endpoint(&self, endpoint: &str) -> String {
         format!("{}/{}", &self.config.gateway, endpoint)
     }

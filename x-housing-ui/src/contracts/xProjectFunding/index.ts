@@ -22,6 +22,10 @@ export class XProjectData {
     readonly collected_funds: BigNumber
   ) {}
 
+  get isTokensClaimable(): boolean {
+    return this.collected_funds.gte(this.funding_goal);
+  }
+
   static fromBase64(base64String: string) {
     let type = xProjectRegistry.getStruct('XProjectData');
 

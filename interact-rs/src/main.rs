@@ -1,10 +1,10 @@
 mod cli;
 mod config;
+mod constants;
 mod helpers;
 mod interact;
 mod state;
 mod types;
-mod constants;
 
 use clap::Parser;
 use cli::Cli;
@@ -23,6 +23,11 @@ async fn main() {
         Cli::UpgradeContracts => todo!(),
         Cli::StartICO => {
             interact.start_ico().await;
-        },
+        }
+        Cli::DeployXProject(args) => {
+            interact
+                .deploy_x_project(args.project_id, &args.name, args.funding_goal)
+                .await;
+        }
     }
 }
