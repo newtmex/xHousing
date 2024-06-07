@@ -18,7 +18,7 @@ export class XPTokenAttributes {
   ) {}
 
   static fromBase64(base64String: string) {
-    let type = xProjectRegistry.getStruct('XPTokenAttributes');
+    const type = xProjectRegistry.getStruct('XPTokenAttributes');
 
     const decoder = new BinaryCodec();
     const value = decoder.decodeTopLevel(

@@ -67,7 +67,7 @@ export default function RentDividends() {
         }
 
         return (
-          <div className='col-6 col-sm-3 col-xxl-2'>
+          <div key={token.identifier} className='col-6 col-sm-3 col-xxl-2'>
             <a
               onClick={(e) => {
                 e.preventDefault();

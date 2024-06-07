@@ -1,5 +1,4 @@
 import useSWR from 'swr';
-import { useGetAccount } from './sdkDappHooks';
 import { useEffect, useState } from 'react';
 import { RefIdData } from '../utils';
 import { getItem, setItem } from '@/storage/session';

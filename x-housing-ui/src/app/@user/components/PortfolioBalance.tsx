@@ -25,7 +25,7 @@ export default function PortfolioBalance() {
       if (n) {
         if (n instanceof Array) {
           n.forEach((token) => {
-            let price = prices[token.collection || token.identifier!];
+            const price = prices[token.collection || token.identifier!];
 
             value = value.plus(
               token.balance
@@ -34,7 +34,7 @@ export default function PortfolioBalance() {
             );
           });
         } else {
-          let price = prices[n.collection || n.identifier!];
+          const price = prices[n.collection || n.identifier!];
 
           value = value.plus(
             n.balance

@@ -1,10 +1,9 @@
 import { ContractWithAbi } from '..';
 import abi from './coinbase.abi.json';
-import { AbiRegistry } from '@multiversx/sdk-core/out';
 import { chainID, coinbaseAddress } from '@/config';
 import { apiProvider } from '@/providers/apiProvider';
 
-const coinbaseRegistry = AbiRegistry.create(abi);
+// const coinbaseRegistry = AbiRegistry.create(abi);
 
 class CoinbaseSC extends ContractWithAbi {
   protected getAbiJson() {

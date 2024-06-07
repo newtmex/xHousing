@@ -72,7 +72,7 @@ export const useTokenPrices = () => {
   const lkXhtID = useLkXhtID();
 
   return useMemo(() => {
-    let prices: { [key: string]: number } = {};
+    const prices: { [key: string]: number } = {};
 
     if (xhtID) {
       prices[xhtID] = Math.random() * 10;

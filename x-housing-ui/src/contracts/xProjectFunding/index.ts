@@ -29,7 +29,7 @@ export class XProjectData {
   }
 
   static fromBase64(base64String: string) {
-    let type = xProjectRegistry.getStruct('XProjectData');
+    const type = xProjectRegistry.getStruct('XProjectData');
 
     const decoder = new BinaryCodec();
     const value = decoder.decodeTopLevel(

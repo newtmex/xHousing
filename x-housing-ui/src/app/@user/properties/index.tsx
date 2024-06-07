@@ -15,8 +15,8 @@ import Link from 'next/link';
 import { useCallback } from 'react';
 
 export default function Properties() {
-  const referrerKey =  getItem('userRefBy') ;
-  const referrerID = referrerKey ? RefIdData.getID(referrerKey):undefined;
+  const referrerKey = getItem('userRefBy');
+  const referrerID = referrerKey ? RefIdData.getID(referrerKey) : undefined;
   const properties = useXProjects();
 
   const { address: loggedInUserAdsress } = useGetAccount();
@@ -32,7 +32,7 @@ export default function Properties() {
         return;
       }
 
-      let tx = contract.makeReceiveRentTx({
+      const tx = contract.makeReceiveRentTx({
         payment: TokenTransfer.fungibleFromAmount(
           xhtId,
           new BigNumber(xht.balance.dividedBy(3)),
@@ -42,7 +42,7 @@ export default function Properties() {
 
       tx.sender = loggedInUserAdsress;
 
-      let transactions: Transaction[] = [tx];
+      const transactions: Transaction[] = [tx];
 
       await signAndSendTransactions({
         transactions,
@@ -55,7 +55,7 @@ export default function Properties() {
 
   const onBuyPropertyUnits = useCallback(
     async ({ data }: Pick<XProjectsValue['projectData'], 'data'>) => {
-      let transactions: Transaction[] = [];
+      const transactions: Transaction[] = [];
 
       if (!data.isTokensClaimable) {
         const fundProjectTx = xProjectFundingSC.makeFundProjectTx({
@@ -66,7 +66,7 @@ export default function Properties() {
           referrerID,
           sender: loggedInUserAdsress
         });
-        
+
         transactions.push(fundProjectTx);
       }
       if (data.isTokensClaimable) {
@@ -86,7 +86,7 @@ export default function Properties() {
         transactionsDisplayInfo: {}
       });
     },
-    [loggedInUserAdsress]
+    [loggedInUserAdsress, referrerID]
   );
 
   return (
@@ -108,7 +108,7 @@ export default function Properties() {
                   unitPrice,
                   image
                 }) => {
-                  let href = `${RoutePath.Properties}`;
+                  const href = `${RoutePath.Properties}`;
 
                   return (
                     <div className='property-item' key={`property-${data.id}`}>

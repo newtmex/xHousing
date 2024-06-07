@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { DECIMALS, DIGITS, ZERO } from '@/constants';
+import { DECIMALS } from '@/constants';
 import { formatAmount } from '../sdkDappUtils';
 
 BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_FLOOR });
@@ -17,7 +17,7 @@ export function prettyFormatAmount({
   decimals?: number;
   showIsLessThanDecimalsLabel?: boolean;
 }) {
-  let digits =
+  const digits =
     value.length <= minLength ? length : length - (value.length - minLength);
   return formatAmount({
     input: value,

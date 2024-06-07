@@ -8,7 +8,7 @@ import { RoutePath } from '@/utils/routes';
 import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const usePortfolioViewToggler = () => {
   const [opened, setOpened] = useState(false);
@@ -44,7 +44,7 @@ export default function PortfolioValue() {
       return;
     }
 
-    let unlockLkXHTtx = xProjectFundingSC.makeUnlockXhtTx({
+    const unlockLkXHTtx = xProjectFundingSC.makeUnlockXhtTx({
       token: lkXht,
       address
     });
@@ -111,9 +111,9 @@ export default function PortfolioValue() {
 
         {xProjectsToken && <>Properties</>}
         {xProjectsToken?.map((token) => (
-          <div className='fancy-selector-option'>
+          <div key={token.identifier} className='fancy-selector-option'>
             <div className='fs-img'>
-              <img alt='' src='img/card2.png' />
+              {/* <img alt='' src='img/card2.png' /> */}
             </div>
             <div className='fs-main-info'>
               <div className='fs-name'>

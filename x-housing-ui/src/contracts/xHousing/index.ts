@@ -1,14 +1,8 @@
 import { ContractWithAbi } from '..';
 import abi from './x-housing.abi.json';
-import {
-  AbiRegistry,
-  CompositeValue,
-  VariadicValue
-} from '@multiversx/sdk-core/out';
+import { CompositeValue, VariadicValue } from '@multiversx/sdk-core/out';
 import { chainID, xHousingAddress } from '@/config';
 import { apiProvider } from '@/providers/apiProvider';
-
-const xHousingRegistry = AbiRegistry.create(abi);
 
 class XHousingSC extends ContractWithAbi {
   protected getAbiJson() {
