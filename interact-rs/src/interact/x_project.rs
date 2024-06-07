@@ -1,4 +1,4 @@
-use multiversx_sc::types::{ManagedAddress, ReturnsNewAddress};
+use multiversx_sc::types::ReturnsNewAddress;
 use multiversx_sc_snippets::imports::*;
 use utils::contracts_proxy::x_project_proxy::XProjectProxy;
 

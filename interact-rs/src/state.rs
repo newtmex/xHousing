@@ -1,6 +1,5 @@
 use std::{io::Write, path::Path};
 
-use multiversx_sc::types::TestTokenIdentifier;
 use multiversx_sc_snippets::imports::Bech32Address;
 use serde::{Deserialize, Serialize};
 

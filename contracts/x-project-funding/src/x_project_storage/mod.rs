@@ -1,6 +1,6 @@
 multiversx_sc::imports!();
 
-use data::{Status, XProjectData, XProjectStorage};
+use data::{XProjectData, XProjectStorage};
 
 pub mod data;
 use lk_xht_module::default_issue_callbacks;

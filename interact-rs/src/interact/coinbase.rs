@@ -1,4 +1,4 @@
-use multiversx_sc::types::{ManagedAddress, ReturnsNewAddress};
+use multiversx_sc::types::ReturnsNewAddress;
 use multiversx_sc_snippets::imports::*;
 use utils::contracts_proxy::coinbase_proxy;
 
@@ -35,7 +35,7 @@ impl Interact {
             &new_address,
         )));
     }
-    
+
     pub fn get_coinbase_addr(&self) -> Bech32Address {
         self.state
             .coinbase_addr

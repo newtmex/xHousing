@@ -12,18 +12,15 @@ use std::{
 use anyhow::{anyhow, Result};
 use multiversx_sc::{
     imports::OptionalValue,
-    types::{Address, BigUint, ManagedAddress},
+    types::{Address, ManagedAddress},
 };
 use multiversx_sc_snippets::{
     imports::{
         BytesValue, ExpectStatus, InterpretableFrom, InterpreterContext, ReturnsNewTokenIdentifier,
         StaticApi,
     },
-    sdk::{
-        data::network_status::{NetworkStatusData, NetworkStatusResponse},
-        wallet::Wallet,
-    },
-    Interactor, InteractorExecEnv, InteractorPrepareAsync,
+    sdk::wallet::Wallet,
+    Interactor, InteractorPrepareAsync,
 };
 use reqwest::Client;
 use utils::contracts_proxy::{
