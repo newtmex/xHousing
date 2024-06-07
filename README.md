@@ -103,3 +103,20 @@ Contracts deployed on the MultiversX Devnet are:
 1. [xHousing](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqs22spcvt0c4rl8zmfyufwxuqu2xneze40fus6t92fu): erd1qqqqqqqqqqqqqpgqs22spcvt0c4rl8zmfyufwxuqu2xneze40fus6t92fu
 1. [xFunding](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgql5664ympcv9cfg7semytlsevw4jcu0gf0fusdshzex): erd1qqqqqqqqqqqqqpgql5664ympcv9cfg7semytlsevw4jcu0gf0fusdshzex
 1. [xProjects Template](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l): erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l
+
+# Project Set Up
+
+-   Clone this Repo
+-   Cd into the folder
+-   Create a `config.toml` file in the `interact-rs` folder with the following content set
+
+```toml
+contracts_owner_pem = "path-to-pem-file.pem" # Used to deploy all contracts
+gateway = "the-multiversx-public-gateway-you-chose-or-alocal-one" # eg "https://devnet-gateway.multiversx.com"
+```
+
+-   Now run `cargo run start-ico`. This will deploy all the contracts and create an `interaction` folder
+-   Inside the interaction folder a `state.toml` file will be created, copy the contents and populate the appropriate `x-housing-ui/src/config/**` file
+-   Now cd into the `x-housing-ui` folder and run `yarn install`
+-   Theb run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
+-   Finally run `yarn preview` then visit the page at `http://localnet:3000`
