@@ -7,15 +7,14 @@ import {
   TransactionsToastList
 } from '@/components';
 import BootstrapClient from '@/components/BootstrapClient';
-import {
-  apiTimeout,
-  environment,
-  walletConnectV2ProjectId,
-} from '@/config';
+import { apiTimeout, environment, walletConnectV2ProjectId } from '@/config';
+import useGlobalData from '@/hooks/useGlobalData';
 import type { PropsWithChildren, ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 
 const AppContent = ({ children }: PropsWithChildren) => {
+  useGlobalData();
+
   return (
     <DappProvider
       environment={environment}

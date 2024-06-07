@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           13
+// Endpoints:                           15
 // Async Callback:                       1
-// Total number of exported functions:  16
+// Total number of exported functions:  18
 
 #![no_std]
 
@@ -26,6 +26,8 @@ multiversx_sc_wasm_adapter::endpoints! {
         set_lk_xht_id => set_lk_xht_id
         registerXst => register_xst_token
         getAffiliateDetails => get_affiliate_details
+        getUserAddress => get_user_address
+        getUserReferrals => get_user_referrals
         getXhtID => xht
         getXstID => xst
         set_up_xht => set_up_xht

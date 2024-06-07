@@ -11,6 +11,7 @@ import {
 
 import { apiProvider } from '@/providers/apiProvider';
 export * from './sdkDappHooks';
+export * from './useGlobalData';
 import useSWR from 'swr';
 
 export const useAccountTokens = () => {

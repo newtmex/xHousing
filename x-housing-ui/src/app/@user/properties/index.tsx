@@ -4,7 +4,8 @@ import { useXhtID } from '@/contracts/coinbase/hooks';
 import { XProjectsValue, useXProjects } from '@/contracts/xProject/hooks';
 import { xProjectFundingSC } from '@/contracts/xProjectFunding';
 import { useAccountTokens } from '@/hooks';
-import { getWindowLocation, prettyFormatAmount } from '@/utils';
+import { getItem } from '@/storage/session';
+import { RefIdData, getWindowLocation, prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
 import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
 import { TokenTransfer, Transaction } from '@multiversx/sdk-core/out';
@@ -14,8 +15,8 @@ import Link from 'next/link';
 import { useCallback } from 'react';
 
 export default function Properties() {
-  // TODO set this from ref url
-  const referrerID = undefined;
+  const referrerKey =  getItem('userRefBy') ;
+  const referrerID = referrerKey ? RefIdData.getID(referrerKey):undefined;
   const properties = useXProjects();
 
   const { address: loggedInUserAdsress } = useGetAccount();
@@ -62,19 +63,20 @@ export default function Properties() {
           amount: new BigNumber(
             data.funding_goal.multipliedBy(5).dividedBy(2).toFixed(0)
           ),
-          referrerID
+          referrerID,
+          sender: loggedInUserAdsress
         });
-        fundProjectTx.sender = loggedInUserAdsress;
+        
         transactions.push(fundProjectTx);
       }
       if (data.isTokensClaimable) {
         const claimXProjectTokenTx = xProjectFundingSC.makeClaimXProjectTokenTx(
           {
-            projectID: data.id
+            projectID: data.id,
+            sender: loggedInUserAdsress
           }
         );
 
-        claimXProjectTokenTx.sender = loggedInUserAdsress;
         transactions.push(claimXProjectTokenTx);
       }
 

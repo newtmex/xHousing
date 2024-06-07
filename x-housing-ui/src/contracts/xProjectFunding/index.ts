@@ -87,21 +87,26 @@ class XProjectFundingSC extends ContractWithAbi {
   makeFundProjectTx({
     projectID,
     amount,
-    referrerID
+    referrerID,
+    sender
   }: {
     projectID: number;
     referrerID?: number;
     amount: BigNumber;
+    sender: string;
   }) {
     return this.buildGenericTXEndPoint({
       endpoint: 'fundProject',
       args: [projectID, referrerID],
       customiser(interaction) {
-        return interaction.withValue(amount).withGasLimit(50_000_000);
+        return interaction
+          .withSender({ bech32: () => sender })
+          .withValue(amount)
+          .withGasLimit(50_000_000);
       }
     });
   }
-  
+
   makeUnlockXhtTx({
     token,
     address
@@ -127,12 +132,20 @@ class XProjectFundingSC extends ContractWithAbi {
     });
   }
 
-  makeClaimXProjectTokenTx({ projectID }: { projectID: number }) {
+  makeClaimXProjectTokenTx({
+    projectID,
+    sender
+  }: {
+    projectID: number;
+    sender: string;
+  }) {
     return this.buildGenericTXEndPoint({
       endpoint: 'claimXProjectToken',
       args: [projectID],
       customiser(interaction) {
-        return interaction.withGasLimit(50_000_000);
+        return interaction
+          .withSender({ bech32: () => sender })
+          .withGasLimit(50_000_000);
       }
     });
   }

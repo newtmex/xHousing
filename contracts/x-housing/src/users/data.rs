@@ -52,6 +52,24 @@ impl<SA: StorageMapperApi> UsersStorage<SA> {
     pub(super) fn get_user_id(&self, address: &ManagedAddress<SA>) -> usize {
         self.users().get_user_id(address)
     }
+
+    pub(super) fn get_user_referrals(
+        &self,
+        id: usize,
+    ) -> MultiValueEncoded<SA, MultiValue2<usize, ManagedAddress<SA>>> {
+        let mut referrals = MultiValueEncoded::new();
+
+        for node in self.user_referrals(id).into_iter() {
+            let user_id = node.into_value();
+            let addr = self
+                .users()
+                .get_user_address(user_id)
+                .unwrap_or_else(|| self.panic(b"no referral with id"));
+            referrals.push((user_id, addr).into());
+        }
+
+        return referrals;
+    }
 }
 
 impl<SA: StorageMapperApi> StorageMapper<SA> for UsersStorage<SA> {

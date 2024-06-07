@@ -23,6 +23,21 @@ pub trait UsersModule {
         (user_id, referrer_data)
     }
 
+    #[view(getUserAddress)]
+    fn get_user_address(&self, id: usize) -> ManagedAddress {
+        self.users_storage()
+            .get_user_address(id)
+            .unwrap_or_else(|| sc_panic!("No user with supplied id"))
+    }
+
+    #[view(getUserReferrals)]
+    fn get_user_referrals(
+        &self,
+        id: usize,
+    ) -> MultiValueEncoded<Self::Api, MultiValue2<usize, ManagedAddress<Self::Api>>> {
+        self.users_storage().get_user_referrals(id)
+    }
+
     fn create_or_get_user_id(
         &self,
         user_addr: &ManagedAddress,

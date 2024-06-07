@@ -1,0 +1,257 @@
+{
+  "buildInfo": {
+    "rustc": {
+      "version": "1.76.0-nightly",
+      "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+      "commitDate": "2023-12-10",
+      "channel": "Nightly",
+      "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
+    },
+    "contractCrate": {
+      "name": "x-housing",
+      "version": "0.0.0"
+    },
+    "framework": {
+      "name": "multiversx-sc",
+      "version": "0.50.1"
+    }
+  },
+  "docs": [
+    "xHousing leverages blockchain technology to revolutionise real estate investment and development by enabling the tokenisation of properties,",
+    "allowing for fractional ownership and ease of investment.This innovative approach addresses the high costs and limited access to real estate",
+    "investments in Abuja, Nigeria, making the market more inclusive and accessible. By selling tokens, xHousing provides developers with",
+    "immediate access to liquid funds, ensuring the timely and quality completion of affordable development projects.",
+    "",
+    "The XHousing Contract is the main contract for the xHousing ecosystem.",
+    "",
+    "This contract owns and deploys xProject contracts which will represent the properties owned and managed by the xHousing project.",
+    "The management of ecosystem users will also be done in this contract."
+  ],
+  "name": "XHousing",
+  "constructor": {
+    "inputs": [
+      {
+        "name": "coinbase",
+        "type": "Address"
+      },
+      {
+        "name": "x_project_funding",
+        "type": "Address"
+      }
+    ],
+    "outputs": []
+  },
+  "upgradeConstructor": {
+    "inputs": [],
+    "outputs": []
+  },
+  "endpoints": [
+    {
+      "docs": [
+        "Creates a new user and returns ID or just returns their ref ID if they already are members",
+        "",
+        "Anyone can call this endpoint at anytime (during project funding or not) to register their wallet address as users of the xHousing platform",
+        "so they can get a referral ID that they can use to leverage other earning opportunities on the platform"
+      ],
+      "name": "createRefID",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "referrer_id",
+          "type": "optional<u32>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "create_ref_id_via_proxy",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "user_addr",
+          "type": "Address"
+        },
+        {
+          "name": "referrer_id",
+          "type": "optional<u32>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "add_x_project",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "Address"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "set_lk_xht_id",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "token_id",
+          "type": "TokenIdentifier"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "registerXst",
+      "onlyOwner": true,
+      "mutability": "mutable",
+      "payableInTokens": ["EGLD"],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "getAffiliateDetails",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "user_addr",
+          "type": "Address"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple<u32,Option<tuple<u32,Address>>>"
+        }
+      ]
+    },
+    {
+      "name": "getUserAddress",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "getUserReferrals",
+      "mutability": "readonly",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "u32"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "variadic<multi<u32,Address>>",
+          "multi_result": true
+        }
+      ]
+    },
+    {
+      "name": "getXhtID",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    },
+    {
+      "name": "getXstID",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    },
+    {
+      "name": "set_up_xht",
+      "mutability": "mutable",
+      "payableInTokens": ["*"],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "name": "add_project_rent",
+      "mutability": "mutable",
+      "inputs": [
+        {
+          "name": "project_token_id",
+          "type": "TokenIdentifier"
+        },
+        {
+          "name": "rent_amount",
+          "type": "BigUint"
+        },
+        {
+          "name": "max_shares",
+          "type": "BigUint"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "stake",
+      "mutability": "mutable",
+      "payableInTokens": ["*"],
+      "inputs": [
+        {
+          "name": "epochs_lock",
+          "type": "u64"
+        },
+        {
+          "name": "referrer_id",
+          "type": "optional<u32>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "claimRewards",
+      "mutability": "mutable",
+      "payableInTokens": ["*"],
+      "inputs": [
+        {
+          "name": "referrer_id",
+          "type": "optional<u32>",
+          "multi_arg": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "getLkXhtID",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "TokenIdentifier"
+        }
+      ]
+    }
+  ],
+  "esdtAttributes": [],
+  "hasCallback": true,
+  "types": {}
+}
