@@ -177,15 +177,6 @@ where
             .original_result()
     }
 
-    pub fn set_lkxht_local_roles(
-        self,
-    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
-        self.wrapped_tx
-            .payment(NotPayable)
-            .raw_call("setLkXhtLocalRoles")
-            .original_result()
-    }
-
     pub fn set_x_project_token<
         Arg0: ProxyArg<usize>,
         Arg1: ProxyArg<ManagedBuffer<Env::Api>>,

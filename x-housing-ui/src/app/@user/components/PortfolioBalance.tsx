@@ -68,7 +68,7 @@ export default function PortfolioBalance() {
               <tr>
                 {' '}
                 {xProjectsTokenDetail.map((token) => (
-                  <td>
+                  <td key={token.collection}>
                     <strong>${prices[token.collection].toFixed(2)}</strong>
                     <div className='balance-label smaller lighter text-nowrap'>
                       {token.name} {token.collection}

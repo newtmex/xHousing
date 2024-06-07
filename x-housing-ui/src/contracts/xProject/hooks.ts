@@ -22,8 +22,8 @@ export interface XProjectsValue {
   unitPrice: BigNumber;
 }
 
-export const useXProjects = (): XProjectsValue[] => {
-  const { data, error } = useSwr('useXProjects-data', () =>
+export const useXProjectsInfo = () =>
+  useSwr('useXProjects-data', () =>
     xProjectFundingSC.getAllXProjectData().then((projectsData) =>
       // Merge with maxSupply
       Promise.all(
@@ -45,6 +45,9 @@ export const useXProjects = (): XProjectsValue[] => {
       )
     )
   );
+
+export const useXProjects = (): XProjectsValue[] => {
+  const { data } = useXProjectsInfo();
 
   return (
     data?.map((projectData, index) => ({

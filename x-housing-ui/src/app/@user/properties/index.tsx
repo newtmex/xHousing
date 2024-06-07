@@ -59,7 +59,9 @@ export default function Properties() {
       if (!data.isTokensClaimable) {
         const fundProjectTx = xProjectFundingSC.makeFundProjectTx({
           projectID: data.id,
-          amount: new BigNumber(data.funding_goal.dividedBy(3).toFixed(0)),
+          amount: new BigNumber(
+            data.funding_goal.multipliedBy(5).dividedBy(2).toFixed(0)
+          ),
           referrerID
         });
         fundProjectTx.sender = loggedInUserAdsress;
@@ -117,7 +119,9 @@ export default function Properties() {
                       <div className='item-info'>
                         <div className='item-features'>
                           {features.map((feature) => (
-                            <div className='feature'>{feature}</div>
+                            <div key={feature} className='feature'>
+                              {feature}
+                            </div>
                           ))}
                         </div>
                         <h3 className='item-title'>

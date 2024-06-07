@@ -8,6 +8,12 @@ pub struct RewardShares<M: ManagedTypeApi> {
     pub referrer_value: BigUint<M>,
 }
 
+impl<M: ManagedTypeApi> RewardShares<M> {
+    pub fn total(&self) -> BigUint<M> {
+        &self.user_value + &self.referrer_value
+    }
+}
+
 pub fn split_reward<M: ManagedTypeApi>(reward: &BigUint<M>) -> RewardShares<M> {
     let mut percent_share = percent_share_factory::<M, _>(reward, 100_00u32);
     let referrer_value = percent_share(6_66); // would amount to approximately 5% of grand total

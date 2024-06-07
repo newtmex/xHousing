@@ -85,14 +85,6 @@ where
     To: TxTo<Env>,
     Gas: TxGas<Env>,
 {
-    pub fn claim_rent_reward(
-        self,
-    ) -> TxTypedCall<Env, From, To, (), Gas, crate::xpt_attributes::XPTokenAttributes<Env::Api>> {
-        self.wrapped_tx
-            .raw_call("claimRentReward")
-            .original_result()
-    }
-
     pub fn register_xp_token<
         Arg0: ProxyArg<ManagedBuffer<Env::Api>>,
         Arg1: ProxyArg<BigUint<Env::Api>>,
@@ -162,6 +154,27 @@ where
     ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
         self.wrapped_tx
             .raw_call("receiveRent")
+            .original_result()
+    }
+
+    pub fn claim_rent_reward(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, crate::xpt_attributes::XPTokenAttributes<Env::Api>> {
+        self.wrapped_tx
+            .raw_call("claimRentReward")
+            .original_result()
+    }
+
+    pub fn rent_cliamable<
+        Arg0: ProxyArg<crate::xpt_attributes::XPTokenAttributes<Env::Api>>,
+    >(
+        self,
+        attr: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, BigUint<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getRentClaimAble")
+            .argument(&attr)
             .original_result()
     }
 
