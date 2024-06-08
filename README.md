@@ -100,8 +100,8 @@ A series of smart contracts powers xHousing platform, each playing a vital role 
 Contracts deployed on the MultiversX Devnet are:
 
 1. [Coinbase](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j): erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j
-1. [xHousing](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqs22spcvt0c4rl8zmfyufwxuqu2xneze40fus6t92fu): erd1qqqqqqqqqqqqqpgqs22spcvt0c4rl8zmfyufwxuqu2xneze40fus6t92fu
-1. [xFunding](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgql5664ympcv9cfg7semytlsevw4jcu0gf0fusdshzex): erd1qqqqqqqqqqqqqpgql5664ympcv9cfg7semytlsevw4jcu0gf0fusdshzex
+1. [xHousing](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv): erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv
+1. [xFunding](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex): erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex
 1. [xProjects Template](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l): erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l
 
 # Project Set Up

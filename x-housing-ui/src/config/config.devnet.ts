@@ -9,8 +9,8 @@ export const chainID = 'D';
 export const coinbaseAddress =
   'erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j';
 export const xHousingAddress =
-  'erd1qqqqqqqqqqqqqpgqs22spcvt0c4rl8zmfyufwxuqu2xneze40fus6t92fu';
+  'erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv';
 export const xProjectFundingAddress =
-  'erd1qqqqqqqqqqqqqpgql5664ympcv9cfg7semytlsevw4jcu0gf0fusdshzex';
+  'erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex';
 export const apiAddress = 'https://devnet-api.multiversx.com';
 export const proxyAddress = 'https://devnet-gateway.multiversx.com';
