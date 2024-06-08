@@ -2,6 +2,7 @@ import { useXProjects } from '@/contracts/xProject/hooks';
 import { useAccountTokens, useTokenPrices } from '@/hooks';
 import { prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
+import { NonFungibleTokenOfAccountOnNetwork } from '@multiversx/sdk-network-providers/out';
 import BigNumber from 'bignumber.js';
 import Link from 'next/link';
 import { useMemo } from 'react';
@@ -16,38 +17,22 @@ export default function PortfolioBalance() {
 
   const portfolioValue = useMemo(() => {
     let value = new BigNumber(0);
-    const addValue = <
-      Bal extends { multipliedBy: any },
-      N extends { balance: Bal; collection?: string; identifier?: string }
-    >(
-      n: N[] | N | null
-    ) => {
-      if (n) {
-        if (n instanceof Array) {
-          n.forEach((token) => {
-            const price = prices[token.collection || token.identifier!];
 
-            value = value.plus(
-              token.balance
-                .multipliedBy(new BigNumber(price.toFixed(2)))
-                .dividedBy(1e2)
-            );
-          });
-        } else {
-          const price = prices[n.collection || n.identifier!];
+    for (const token of [xht, lkXht, ...(xProjectsToken || [])]) {
+      if (token) {
+        const price =
+          prices[
+            (token as NonFungibleTokenOfAccountOnNetwork).collection ||
+              token.identifier
+          ];
 
-          value = value.plus(
-            n.balance
-              .multipliedBy(new BigNumber(price.toFixed(2)))
-              .dividedBy(1e20)
-          );
-        }
+        value = value.plus(
+          token.balance
+            .multipliedBy(new BigNumber(price.toFixed(2)))
+            .dividedBy(1e20)
+        );
       }
-    };
-
-    addValue(xht);
-    addValue(lkXht);
-    addValue(xProjectsToken);
+    }
 
     return prettyFormatAmount({ value: value.toFixed(0), decimals: 2 });
   }, [xht, lkXht, xProjectsToken, prices]);
@@ -66,7 +51,6 @@ export default function PortfolioBalance() {
           <table className='table table-lightborder table-bordered table-v-compact mb-0'>
             <tbody>
               <tr>
-                {' '}
                 {xProjectsTokenDetail.map((token) => (
                   <td key={token.collection}>
                     <strong>${prices[token.collection].toFixed(2)}</strong>
