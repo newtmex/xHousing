@@ -56,13 +56,17 @@ Staking: Users can stake XHT and SFTs to earn rewards.
 
 **Job Creation:** Development projects lead to job creation and improved infrastructure in local communities.
 
-## Smart Contracts
+# Detailed Description of the dApp's Design and Architecture
 
-A series of smart contracts powers xHousing platform, each playing a vital role in its ecosystem:
+## Architecture
 
-1.  **Coinbase Contract**: [Link to README](./contracts/coinbase/README.md)
+The backend of the xHousing dApp is powered by four smart contracts deployed on the MultiversX devnet. The frontend is a Next.js app, and it is deployed at [x-housing.vercel.app](https://x-housing.vercel.app)
 
-    The `Coinbase` contract is responsible for managing the distribution and economics of XHT tokens
+### Smart Contracts
+
+1.  **Coinbase Contract**: [Link to code](./contracts/coinbase)
+
+    The [Coinbase](./contracts/coinbase) contract is responsible for managing the distribution and economics of XHT tokens
     within the xHousing platform. It interacts with the `XHTModule` to perform token operations
     such as minting and burning. The contract ensures efficient token supply management by
     distributing XHT tokens to users participating in platform activities (e.g., fundraising,
@@ -70,39 +74,38 @@ A series of smart contracts powers xHousing platform, each playing a vital role 
     access control mechanisms are included to restrict certain operations to authorized parties,
     maintaining the integrity and security of the platform's token economy.
 
-2.  **xHousing Contract**: [Link to README](./contracts/x-housing/README.md)
+    Deployment: [erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j)
 
-    The XHousing Contract is the main contract for the xHousing ecosystem.
+2.  **xHousing Contract**: [Link to code](./contracts/x-housing)
+
+    The [XHousing Contract](./contracts/x-housing) is the main contract for the xHousing ecosystem.
     This contract owns and deploys xProject contracts which will represent the properties owned and managed by the xHousing project.
     The management of ecosystem users will also be done in this contract.
 
-3.  **xProject Template Contract**: [Link to README](./contracts/x-project/README.md)
+    Deployment: [erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv)
 
-    The `xProject` contract template serves as the foundational blueprint for deploying
+3.  **xProject Template Contract**: [Link to code](./contracts/x-project)
+
+    The [xProject](./contracts/x-project) contract template serves as the foundational blueprint for deploying
     individual real estate projects within the xHousing ecosystem.
     Each `xProject` contract represents a unique real estate development,
     managing its ownership, revenue distribution, and participant interactions.
 
-4.  **xProject Funding Contract**: [Link to README](./contracts/x-project-funding/README.md)
+    Deployment: [erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l)
 
-    The `xProjectFunding` contract is designed to manage the crowdfunding process for real estate projects
+4.  **xProject Funding Contract**: [Link to code](./contracts/x-project-funding)
+
+    The [xProjectFunding](./contracts/x-project-funding) contract is designed to manage the crowdfunding process for real estate projects
     within the xHousing ecosystem. This contract facilitates the collection of funds from participants, handles
     participant registrations, deploys the `xProject` contract upon successful funding, and disburses tokens (XHT and SFT)
     to contributors. If the funding goal is not met by the deadline, it allows participants to withdraw their funds.
 
-## Media
+    Deployment: [erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex)
+
+# Media
 
 -   [Pitch Deck](Pitch.key)
 -   [Presentation](https://youtu.be/-h8h9u_LK2c)
-
-## MultiverseX Devnet Deployments
-
-Contracts deployed on the MultiversX Devnet are:
-
-1. [Coinbase](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j): erd1qqqqqqqqqqqqqpgqmepkngjhgw4kff4u976rmdpjpv3uc4mp0fuskv4y8j
-1. [xHousing](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv): erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv
-1. [xFunding](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex): erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex
-1. [xProjects Template](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l): erd1qqqqqqqqqqqqqpgq2dwfaw667t5tp059jdfhwxqj34lwn8t80fusl3l40l
 
 # Project Set Up
 
@@ -118,5 +121,5 @@ gateway = "the-multiversx-public-gateway-you-chose-or-alocal-one" # eg "https://
 -   Now run `cargo run start-ico`. This will deploy all the contracts and create an `interaction` folder
 -   Inside the interaction folder a `state.toml` file will be created, copy the contents and populate the appropriate `x-housing-ui/src/config/**` file
 -   Now cd into the `x-housing-ui` folder and run `yarn install`
--   Theb run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
+-   The run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
 -   Finally run `yarn preview` then visit the page at `http://localnet:3000`
