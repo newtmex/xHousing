@@ -4,15 +4,19 @@ import UserInfo from './UserInfo';
 import Link from 'next/link';
 import { useRef } from 'react';
 import $ from 'jquery';
-import { useContentPanel } from '@/hooks';
+import { useContentPanel, useOnPathChange } from '@/hooks';
 
 export default function MobileMenu() {
   const { toggleContentPanel } = useContentPanel();
-  
+
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleShowMenu = async () => {
     $(menuRef.current!).slideToggle(250, 'swing');
   };
+
+  useOnPathChange(() => {
+    $(menuRef.current!).slideUp(250);
+  });
 
   return (
     <div className='menu-mobile menu-activated-on-click color-scheme-dark'>

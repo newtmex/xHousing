@@ -2,25 +2,18 @@
 
 import { useXhtID } from '@/contracts/coinbase/hooks';
 import { xProjectFundingSC } from '@/contracts/xProjectFunding';
-import { useAccountTokens, useGetAccount } from '@/hooks';
+import { useAccountTokens, useGetAccount, useOnPathChange } from '@/hooks';
 import { getWindowLocation, prettyFormatAmount } from '@/utils';
 import { RoutePath } from '@/utils/routes';
 import { signAndSendTransactions } from '@/utils/signAndSendTransactions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const usePortfolioViewToggler = () => {
   const [opened, setOpened] = useState(false);
 
-  const pathname = usePathname();
-  const pathnameRef = useRef(pathname);
-  useEffect(() => {
-    if (pathname !== pathnameRef.current) {
-      setOpened(false);
-      pathnameRef.current = pathname;
-    }
-  }, [pathname]);
+  useOnPathChange(() => setOpened(false));
 
   return {
     opened,

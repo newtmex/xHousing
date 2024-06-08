@@ -1,7 +1,7 @@
 import { useXhtID } from '@/contracts/coinbase/hooks';
 import { useXProjects } from '@/contracts/xProject/hooks';
 import { useLkXhtID } from '@/contracts/xProjectFunding/hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
 import {
@@ -16,6 +16,7 @@ export * from './sdkDappHooks';
 export * from './useGlobalData';
 
 import useSWR from 'swr';
+import { usePathname } from 'next/navigation';
 
 export const useAccountTokens = () => {
   const xProjectsTokenId = useXProjects().map((v) => v.projectData.tokenId);
@@ -112,4 +113,15 @@ export const useContentPanel = () => {
       mutate(true);
     }
   };
+};
+
+export const useOnPathChange = (cb: () => void) => {
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== pathnameRef.current) {
+      cb();
+      pathnameRef.current = pathname;
+    }
+  }, [pathname, cb]);
 };
