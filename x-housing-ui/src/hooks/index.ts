@@ -1,7 +1,7 @@
 import { useXhtID } from '@/contracts/coinbase/hooks';
 import { useXProjects } from '@/contracts/xProject/hooks';
 import { useLkXhtID } from '@/contracts/xProjectFunding/hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
 import {
@@ -10,8 +10,11 @@ import {
 } from '@multiversx/sdk-network-providers/out';
 
 import { apiProvider } from '@/providers/apiProvider';
+
+export * from './useWindowResize';
 export * from './sdkDappHooks';
 export * from './useGlobalData';
+
 import useSWR from 'swr';
 
 export const useAccountTokens = () => {
@@ -87,4 +90,26 @@ export const useTokenPrices = () => {
 
     return prices;
   }, [xhtID, xProjectsTokenId, lkXhtID]);
+};
+
+export const useContentPanel = () => {
+  const { data, mutate } = useSWR('ui-contentent-panel', {
+    fallbackData: false
+  });
+
+  useEffect(() => {}, []);
+
+  return {
+    contentPanelActive: data,
+    toggleContentPanel() {
+      mutate(!data);
+    },
+    hideContentPanel() {
+      console.log('hide');
+      mutate(false);
+    },
+    showContentPanel() {
+      mutate(true);
+    }
+  };
 };

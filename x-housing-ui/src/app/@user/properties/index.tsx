@@ -131,20 +131,22 @@ export default function Properties() {
                         </h3>
 
                         <div className='item-price-buttons row'>
-                          <div className='col-12 row'>
-                            <div className='item-price col-8'>
-                              <strong>${rentPrice}</strong>
-                              <span>/per year</span>
+                          {data.isTokensClaimable && (
+                            <div className='col-12 row'>
+                              <div className='item-price col-8'>
+                                <strong>${rentPrice}</strong>
+                                <span>/per year</span>
+                              </div>
+                              <div className='item-buttons col-4'>
+                                <button
+                                  onClick={() => onRentProperty({ contract })}
+                                  className='btn btn-primary'
+                                >
+                                  Rent
+                                </button>
+                              </div>
                             </div>
-                            <div className='item-buttons col-4'>
-                              <button
-                                onClick={() => onRentProperty({ contract })}
-                                className='btn btn-primary'
-                              >
-                                Rent
-                              </button>
-                            </div>
-                          </div>
+                          )}
                           <div className='col-12 row'>
                             {!data.isTokensClaimable && (
                               <div className='item-price col-8'>
