@@ -52,7 +52,11 @@ export const useXProjects = (): XProjectsValue[] => {
   return (
     data?.map((projectData, index) => ({
       description: '',
-      features: ['ketchin', 'en-suite', 'cctv'],
+      features: [
+        ['kitchen', 'en-suite', 'cctv'],
+        ['security', 'balcony'],
+        ['dog house', 'guest house', 'maid house']
+      ][index % 3],
       image: `img/property${((index + 2) % 3) + 1}.jpg`,
       rentPrice: 0,
       projectData,

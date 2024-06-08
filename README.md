@@ -67,7 +67,7 @@ The backend of the xHousing dApp is powered by four smart contracts deployed on 
 1.  **Coinbase Contract**: [Link to code](./contracts/coinbase)
 
     The [Coinbase](./contracts/coinbase) contract is responsible for managing the distribution and economics of XHT tokens
-    within the xHousing platform. It interacts with the `XHTModule` to perform token operations
+    within the xHousing platform. It interacts with the [XHTModule](./rust-packages/x-housing-module/) to perform token operations
     such as minting and burning. The contract ensures efficient token supply management by
     distributing XHT tokens to users participating in platform activities (e.g., fundraising,
     staking, referrals) and burning tokens to support deflationary mechanisms. Ownership and
@@ -78,9 +78,7 @@ The backend of the xHousing dApp is powered by four smart contracts deployed on 
 
 2.  **xHousing Contract**: [Link to code](./contracts/x-housing)
 
-    The [XHousing Contract](./contracts/x-housing) is the main contract for the xHousing ecosystem.
-    This contract owns and deploys xProject contracts which will represent the properties owned and managed by the xHousing project.
-    The management of ecosystem users will also be done in this contract.
+    The [xHousing](./contracts/x-housing) contract is the main contract for the xHousing ecosystem. The management of ecosystem users will is done in this contract. User referrals, staking and governance is done here. Collection of staking rewards is also done here.
 
     Deployment: [erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqxaz0puawlrgazrq2d0qg58thd776fjaz0fusy7eqgv)
 
@@ -95,9 +93,7 @@ The backend of the xHousing dApp is powered by four smart contracts deployed on 
 
 4.  **xProject Funding Contract**: [Link to code](./contracts/x-project-funding)
 
-    The [xProjectFunding](./contracts/x-project-funding) contract is designed to manage the crowdfunding process for real estate projects
-    within the xHousing ecosystem. This contract facilitates the collection of funds from participants, handles
-    participant registrations, deploys the `xProject` contract upon successful funding, and disburses tokens (XHT and SFT)
+    The [xProjectFunding](./contracts/x-project-funding) contract is designed to manage the crowdfunding process for real estate projects within the xHousing ecosystem. This contract owns and deploys [xProject contracts](./contracts/x-project) which represents the properties on the platform. This contract facilitates the collection of funds from participants, handles participant registrations, deploys the `xProject` contract upon successful funding, and disburses tokens (XHT and SFT)
     to contributors. If the funding goal is not met by the deadline, it allows participants to withdraw their funds.
 
     Deployment: [erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex)
