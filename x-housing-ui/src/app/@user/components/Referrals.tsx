@@ -2,10 +2,9 @@ import { xHousingSC } from '@/contracts/xHousing';
 import { useGetAccount } from '@multiversx/sdk-dapp/hooks/account/useGetAccount';
 import useSWR from 'swr';
 
-// @ts-ignore
-import blockies from 'blockies-identicon';
 import { Address } from '@multiversx/sdk-core/out';
 import { truncateFromInside } from '@/utils';
+import BlockiesImage from '@/components/BlockiesImage';
 
 export default function Referrals() {
   const { address } = useGetAccount();
@@ -38,17 +37,8 @@ export default function Referrals() {
                     href='users_profile_small.html'
                   >
                     <div className='pt-avatar-w'>
-                      <img
-                        alt=''
-                        src={blockies
-                          .create({
-                            seed: new Address(referralAddress)
-                              .pubkey()
-                              .toString(),
-                            size: 8,
-                            scale: 16
-                          })
-                          .toDataURL()}
+                      <BlockiesImage
+                        seed={new Address(referralAddress).pubkey().toString()}
                       />
                     </div>
                     <div className='pt-user-name'>
