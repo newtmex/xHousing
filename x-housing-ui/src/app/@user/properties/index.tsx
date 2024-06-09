@@ -101,7 +101,7 @@ export default function Properties() {
             ) : (
               properties.map(
                 ({
-                  projectData: { tokenId, data, contract },
+                  projectData: { tokenId, data, contract, tokenInfo },
                   description,
                   features,
                   rentPrice,
@@ -127,7 +127,10 @@ export default function Properties() {
                           ))}
                         </div>
                         <h3 className='item-title'>
-                          <Link href={href}>{description}</Link>
+                          <Link href={href}>
+                            {tokenInfo.name}&nbsp;
+                            {tokenInfo.collection.split('-')[1]}
+                          </Link>
                         </h3>
 
                         <div className='item-price-buttons row'>

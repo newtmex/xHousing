@@ -106,7 +106,6 @@ export const useContentPanel = () => {
       mutate(!data);
     },
     hideContentPanel() {
-      console.log('hide');
       mutate(false);
     },
     showContentPanel() {

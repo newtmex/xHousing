@@ -6,13 +6,9 @@ import { useGetAccountInfo } from '@/hooks';
 export default function UserAvatar() {
   const { publicKey } = useGetAccountInfo();
 
-  if (!publicKey) {
-    return null;
-  }
-
   return (
     <div className='avatar-w'>
-      <BlockiesImage seed={publicKey} />
+      <BlockiesImage seed={publicKey || '----'} />
     </div>
   );
 }
