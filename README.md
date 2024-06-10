@@ -111,4 +111,4 @@ gateway = "the-multiversx-public-gateway-you-chose-or-alocal-one" # eg "https://
 -   Inside the interaction folder a `state.toml` file will be created, copy the contents and populate the appropriate `x-housing-ui/src/config/**` file
 -   Now cd into the `x-housing-ui` folder and run `yarn install`
 -   Run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
--   Finally run `yarn preview` then visit the page at `http://localnet:3000`
+-   Finally run `yarn preview` then visit the page at `http://localhost:3000`
