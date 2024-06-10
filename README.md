@@ -94,17 +94,21 @@ The backend of the xHousing dApp is powered by four smart contracts deployed on 
 
 ## Project Set Up
 
--   Clone this Repo
--   Cd into the folder
--   Create a `config.toml` file in the `interact-rs` folder with the following content set
+### Prerequisites
+You must have your environment setup for [MultiversX development](https://docs.multiversx.com/sdk-and-tools/troubleshooting/rust-setup) and [NextJS app development](https://nextjs.org/). Yarn is also required for NodeJS package management.
+
+### Deploy Contracts
+-   Clone this repository
+-   `cd interact-rs`
+-   Create a `config.toml` file with the following content set
 
 ```toml
 contracts_owner_pem = "path-to-pem-file.pem" # Used to deploy all contracts
 gateway = "the-multiversx-public-gateway-you-chose-or-alocal-one" # eg "https://devnet-gateway.multiversx.com"
 ```
 
--   Now run `cargo run start-ico`. This will deploy all the contracts and create an `interaction` folder
+-   Run `cargo run start-ico`. This will deploy all the contracts and create an `interaction` folder for the deploment network. The folder will contain info about the contracts and ecosystem state.
 -   Inside the interaction folder a `state.toml` file will be created, copy the contents and populate the appropriate `x-housing-ui/src/config/**` file
 -   Now cd into the `x-housing-ui` folder and run `yarn install`
--   The run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
+-   Run `yarn build-{CONFIG}` where `CONFIG` can be `devnet`, `localnet`, etc
 -   Finally run `yarn preview` then visit the page at `http://localnet:3000`
