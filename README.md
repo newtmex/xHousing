@@ -13,56 +13,45 @@ _Properties View_
 ## Features
 
 ### Tokenization of Real Estate
-
-**Fractional Ownership:** Real estate properties are tokenized, allowing multiple investors to own fractions of a property.
-Semi-Fungible Tokens (SFTs): Each property has its own SFT collection representing fractional ownership.
+1. **Fractional Ownership:** Real estate properties are tokenized, allowing multiple investors to own fractions of a property.
+2. **xProject Tokens (XPT):** Each property has its own SFT collection representing fractional ownership. These tokens are called xProject Token (XPT).
 
 ### XHT Token
-
-**Native Token:** Used for initial fundraising and rewarding participants.
-Staking: Users can stake XHT and SFTs to earn rewards.
-
-**Governance:** Stakers receive governance NFTs for voting rights and loyalty programs.
+1. **Native Token:** Used for initial fundraising and rewarding participants.
+1. **Staking**: Users can stake XHT and Property SFTs to earn rewards.
+1. **Governance:** Stakers receive governance NFTs for voting rights and loyalty programs.
 
 ### Referral System
-
-**Bonuses:** Referrers earn bonuses when users they referred claim staking rewards.
-
-**Royalties:** Referrers earn a fraction of the royalties from secondary sales of SFTs.
+1. **Bonuses:** Referrers earn bonuses when users they referred claim property rent or staking rewards.
+1. **Royalties:** Referrers earn a fraction of the royalties from secondary sales of XPTs.
 
 ### Rent Rewards
-
-**Monthly Distribution:** Rent paid in various currencies is converted to XHT and distributed to SFT holders over a year.
-
-**Burn Mechanism:** A fraction of the rent converted to XHT is burned, increasing the token's value.
+1. **Monthly Distribution:** Rent paid in various currencies is converted to XHT and distributed to XPT holders of that property over a year.
+1. **Burn Mechanism:** A fraction of the rent converted to XHT is burned, increasing the token's value.
 
 ## Impact and Relevance
 
 ### Democratization of Real Estate Investment
+1. **Accessibility:** Allows individuals with limited capital to invest in real estate, traditionally a high-barrier market.
+1. **Inclusivity:** Broadens the investor base and democratizes access to lucrative real estate investments.
 
-**Accessibility:** Allows individuals with limited capital to invest in real estate, traditionally a high-barrier market.
-
-**Inclusivity:** Broadens the investor base and democratizes access to lucrative real estate investments.
-
-### Support for Developers
-
-**Liquidity:** Provides developers with immediate funds through token sales, ensuring timely and quality project completion.
-
-**Affordable Housing:** Helps address the housing challenges in Abuja by enabling the development of high-quality, affordable housing projects.
+### Support for Estate Developers
+1. **Liquidity:** Provides developers with immediate funds through token sales, ensuring timely and quality project completion.
+1. **Affordable Housing:** Helps address the housing challenges in Abuja by enabling the development of high-quality, affordable housing projects.
 
 ### Economic Growth
+1. **Boosting Investments:** By facilitating more investments in real estate, the platform contributes to economic stability and growth in the region.
+1. **Job Creation:** Development projects lead to job creation and improved infrastructure in local communities.
 
-**Boosting Investments:** By facilitating more investments in real estate, the platform contributes to economic stability and growth in the region.
 
-**Job Creation:** Development projects lead to job creation and improved infrastructure in local communities.
 
-# Detailed Description of the dApp's Design and Architecture
+## Detailed Description of the dApp's Design and Architecture
 
-## Architecture
+### Architecture
 
 The backend of the xHousing dApp is powered by four smart contracts deployed on the MultiversX devnet. The frontend is a Next.js app, and it is deployed at [x-housing.vercel.app](https://x-housing.vercel.app)
 
-### Smart Contracts
+#### Smart Contracts
 
 1.  **Coinbase Contract**: [Link to code](./contracts/coinbase)
 
@@ -98,12 +87,12 @@ The backend of the xHousing dApp is powered by four smart contracts deployed on 
 
     Deployment: [erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex](https://devnet-explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq4qv8rgwxwmf9ujnlsxe2mgg9vgzdgjnu0fusn9thex)
 
-# Media
+## Media
 
 -   [Pitch Deck](Pitch.key)
 -   [Presentation](https://youtu.be/-h8h9u_LK2c)
 
-# Project Set Up
+## Project Set Up
 
 -   Clone this Repo
 -   Cd into the folder
